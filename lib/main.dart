@@ -5,7 +5,6 @@ import 'package:medicated/home.dart';
 const users = const {
   'biswatex@gmail.com': 'biswatex',
 };
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
