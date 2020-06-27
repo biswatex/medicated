@@ -10,7 +10,6 @@ class DrawerItem {
   String img;
   DrawerItem(this.title, this.icon, this.img);
 }
-final FirebaseAuth _auth = FirebaseAuth.instance;
 class HomePage extends StatefulWidget {
   final drawerItems = [
     new DrawerItem("Fragment 1", Icons.home,'assets/images/appbar_bg.png'),
@@ -66,10 +65,6 @@ class HomePageState extends State<HomePage> {
         iconTheme: IconThemeData(color: Colors.grey),
         elevation: 0.0,
         actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.search,color: Colors.grey,),
-            onPressed: () {},
-          ),
           IconButton(
             icon: const Icon(Icons.notifications,color: Colors.grey,),
             tooltip: 'Next page',
