@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medicated/components/SignUpLink.dart';
 
 class GoogleSignIn extends StatelessWidget {
   final DecorationImage google;
@@ -12,10 +11,7 @@ class GoogleSignIn extends StatelessWidget {
       child: Column(
         children: [
           Container(
-              margin: EdgeInsets.only(bottom:30),
-              child: SignUp()),
-          Container(
-              margin: EdgeInsets.only(bottom:70),
+              margin: EdgeInsets.only(bottom:50,top: 50),
               child: Text('or',style: TextStyle(color:Colors.white,fontSize:18,fontWeight:FontWeight.bold))),
           Container(
             margin: EdgeInsets.only(bottom:10),

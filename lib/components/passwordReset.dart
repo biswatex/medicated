@@ -1,6 +1,19 @@
+import 'dart:async';
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class PasswordReset extends StatelessWidget {
+class PasswordReset extends StatefulWidget {
+  @override
+  _PasswordResetState createState() => _PasswordResetState();
+}
+
+class _PasswordResetState extends State<PasswordReset> {
+  final _auth = FirebaseAuth.instance;
+  String email;
+  int _state = 0;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,7 +39,7 @@ class PasswordReset extends StatelessWidget {
             child: new TextFormField(
               obscureText: false,
               decoration: new InputDecoration(
-                prefixIcon: new Icon(Icons.email,color:Colors.white),
+                prefixIcon: new Icon(Icons.email,color:Colors.purple),
                 labelText: 'Email ID',
                 labelStyle: TextStyle(color: Colors.purple),
                 fillColor: Colors.white12,
@@ -61,6 +74,9 @@ class PasswordReset extends StatelessWidget {
               style: new TextStyle(
                 fontFamily: "Poppins",
               ),
+              onChanged: (value) {
+                email = value; //get the value entered by user.
+              },
             ),
           ),
           Container(
@@ -68,7 +84,19 @@ class PasswordReset extends StatelessWidget {
             padding: EdgeInsets.only(left: 50,right: 50,top: 20),
             child :InkWell(
               borderRadius: BorderRadius.circular(25),
-              onTap: () {},
+              onTap: () async{
+                    try {
+                      setState(() {
+                        if (_state == 0) {
+                          animateButton();
+                        }
+                      });
+                      await _auth.sendPasswordResetEmail(email: email);
+                      log("send");
+                    }catch(e){
+                      log(e);
+                }
+              },
               splashColor: Colors.blue,
               highlightColor: Colors.blue,
               child: Container(
@@ -80,9 +108,7 @@ class PasswordReset extends StatelessWidget {
                   border: Border.all(color: Colors.grey),
                 ),
                 child: Center(
-                  child: Text("Send Link",style: TextStyle(
-                    color: Colors.white,
-                  ),),
+                  child: setUpButtonChild(),
                 ),
               ),
             ),
@@ -90,5 +116,35 @@ class PasswordReset extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget setUpButtonChild() {
+    if (_state == 0) {
+      return new Text(
+        "Send Link",
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16.0,
+        ),
+      );
+    } else if (_state == 1) {
+      return CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      );
+    } else {
+      return Icon(Icons.check, color: Colors.white);
+    }
+  }
+
+  void animateButton() {
+    setState(() {
+      _state = 1;
+    });
+
+    Timer(Duration(milliseconds: 3300), () {
+      setState(() {
+        _state = 2;
+      });
+    });
   }
 }

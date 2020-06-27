@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "865126600281",
+    "firebase_url": "https://medicated-76702.firebaseio.com",
+    "project_id": "medicated-76702",
+    "storage_bucket": "medicated-76702.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:865126600281:android:147870f5fed21aaf73ab48",
+        "android_client_info": {
+          "package_name": "com.biswatechs.medicated"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "865126600281-frrnur0mkbr6s4prrt5r245ao9f08mlo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmm9JzwBS6-056TbAIP3BYVoxwTNcIyhM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "865126600281-frrnur0mkbr6s4prrt5r245ao9f08mlo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
