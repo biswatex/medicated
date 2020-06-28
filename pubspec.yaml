@@ -62,7 +62,6 @@ flutter:
      - assets/images/google.png
      - assets/images/facebook.png
      - assets/images/M.png
-     - assets/images/mapBg.png
      - assets/images/doctor_animated.gif
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

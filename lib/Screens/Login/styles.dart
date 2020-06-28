@@ -5,11 +5,6 @@ DecorationImage backgroundImage = new DecorationImage(
   fit: BoxFit.cover,
 );
 
-DecorationImage mapBg = new DecorationImage(
-  image: new AssetImage('assets/images/mapBg.png'),
-  fit: BoxFit.cover,
-);
-
 DecorationImage tick = new DecorationImage(
   image: new AssetImage('assets/images/M.png'),
   fit: BoxFit.cover,
