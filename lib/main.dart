@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return   MaterialApp(
-          title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
           home:  Auth(),
         );
       }
@@ -34,11 +36,11 @@ class _SplashPageState extends State<Auth> {
             builder: (context) => LoginScreen()),)}
       else
         {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => HomePage()),
-          )}
+          Firestore.instance.collection('user').document(currentUser.uid).get().then((value) =>
+              Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => HomePage(title:value['name'],uid:value['email'],)),
+          )),
+          }
     })
         .catchError((err) => print(err));
     super.initState();

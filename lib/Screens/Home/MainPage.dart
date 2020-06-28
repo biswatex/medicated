@@ -1,20 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medicated/Screens/Login/index.dart';
+import 'package:medicated/components/DataSearch.dart';
 import 'package:medicated/drawerFragments/FragmentAbout.dart';
 import 'package:medicated/drawerFragments/FragmentSettings.dart';
 import 'package:medicated/drawerFragments/fragmentHome.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 class DrawerItem {
   String title;
   IconData icon;
-  String img;
-  DrawerItem(this.title, this.icon, this.img);
+  DrawerItem(this.title, this.icon);
 }
 class HomePage extends StatefulWidget {
+  final String title;
+  final String uid;
+  HomePage({Key key, this.title,this.uid}) : super(key: key);
   final drawerItems = [
-    new DrawerItem("Fragment 1", Icons.home,'assets/images/appbar_bg.png'),
-    new DrawerItem("Fragment 2", Icons.android,'assets/images/appbar_bg.png'),
-    new DrawerItem("Fragment 3", Icons.info,'assets/images/appbar_bg.png')
+    new DrawerItem("Hone", Icons.home),
+    new DrawerItem("Settings", Icons.settings),
+    new DrawerItem("About", Icons.info)
   ];
 
   @override
@@ -24,19 +30,21 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  int _selectedDrawerIndex = 0;
 
+  int counter = 10;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _selectedDrawerIndex = 0;
   _getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
         return new FragmentHome();
       case 1:
-        return new FlutterBlueApp();
+        return new Settings();
       case 2:
-        return new DragabbleScrollableSheetDemo();
+        return new About();
 
       default:
-        return new Text("Error");
+        return new FragmentHome();
     }
   }
 
@@ -44,9 +52,14 @@ class HomePageState extends State<HomePage> {
     setState(() => _selectedDrawerIndex = index);
     Navigator.of(context).pop(); // close the drawer
   }
-
+  getSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('name',widget.title);
+    prefs.setString('email', widget.uid);
+  }
   @override
   Widget build(BuildContext context) {
+    getSF();
     var drawerOptions = <Widget>[];
     for (var i = 0; i < widget.drawerItems.length; i++) {
       var d = widget.drawerItems[i];
@@ -59,43 +72,84 @@ class HomePageState extends State<HomePage> {
           )
       );
     }
-    return new Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.grey),
-        elevation: 0.0,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.notifications,color: Colors.grey,),
-            tooltip: 'Next page',
-            onPressed: () {},
+    String name ;
+    String uide;
+    if(widget.title!=null && widget.uid != null) {
+      name = widget.title;
+      uide = widget.uid;
+    }
+    else{
+      uide ="1";
+      name = "User";
+    }
+    return Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            backgroundColor: Color.fromARGB(255,51, 153, 204),
+            iconTheme: IconThemeData(color: Colors.white),
+            elevation: 0.0,
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.search, color: Colors.white,),
+                onPressed: () {
+                  showSearch(context: context, delegate: DataSearch());
+                },
+              ),
+              Stack(
+                children: <Widget>[
+                  new IconButton(icon: Icon(Icons.notifications), onPressed: () {
+                    setState(() {
+                      counter = 0;
+                    });
+                  }),
+                  Positioned(
+                    right: 10,
+                    top: 10,
+                    child: new Container(
+                      padding: EdgeInsets.all(2),
+                      decoration: new BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 14,
+                        minHeight: 14,
+                      ),
+                      child: Text(
+                        '$counter',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
-      body: Center(
-        child: _getDrawerItemWidget(_selectedDrawerIndex),
-      ),
-      drawer: new Drawer(
-        child: new Column(
-          children: <Widget>[
-            new UserAccountsDrawerHeader(
-
-                accountName: new Text("Shantanu pal"), accountEmail: null),
-            new Column(children: drawerOptions),
-            new IconButton(
-              icon: Icon(Icons.brightness_5),
-              onPressed: null,
-            ),
-            new RaisedButton(
-              onPressed: (){
-                FirebaseAuth.instance.signOut();
-                Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => LoginScreen()));
-              },
-              child: const Text('Logout'),
-            ),
-          ],
-        ),
-      ),
+          body: Center(
+            child: _getDrawerItemWidget(_selectedDrawerIndex),
+          ),
+          drawer: new Drawer(
+            child:  new Column(
+                      children: <Widget>[
+                        new UserAccountsDrawerHeader(
+                            accountName: new Text(name), accountEmail:Text(uide)),
+                        new Column(children: drawerOptions),
+                        new RaisedButton(
+                          onPressed: () {
+                            FirebaseAuth.instance.signOut();
+                            Navigator.pushReplacement(context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginScreen()));
+                          },
+                          child: const Text('Logout'),
+                        ),
+                      ],
+                    )
+          )
     );
   }
 }

@@ -4,34 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:medicated/HomeTabs/tab1.dart';
 import 'package:medicated/HomeTabs/tab4.dart';
 
-class FragmentHome extends StatelessWidget {
-  static const String _title = 'Medicated';
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner:false,
-      title: _title,
-      home: MainClass(),
-    );
-  }
-}
-/// Redirect to second class.
-class SecondRoute extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return null;
-  }
-}
-
-class MainClass extends StatefulWidget {
-  MainClass({Key key}) : super(key: key);
+class FragmentHome extends StatefulWidget {
   @override
   _MainClassState createState() => _MainClassState();
 }
 
-class _MainClassState extends State<MainClass> {
+class _MainClassState extends State<FragmentHome>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
-  List<Widget> _widgetOptions = <Widget>[
+  final List<Widget> _widgetOptions = <Widget>[
     tabHome(),
     Text(
       'Index 2: School',
@@ -41,7 +22,6 @@ class _MainClassState extends State<MainClass> {
     ),
     User(),
   ];
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;

@@ -1,16 +1,14 @@
 import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter/services.dart';
 import 'package:medicated/auth/auth.dart';
+import 'package:medicated/components/Customloder.dart';
 import 'package:medicated/components/flipView.dart';
 import 'package:medicated/components/googleSignIn.dart';
 import 'package:medicated/components/passwordReset.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 import 'styles.dart';
 class LoginScreen extends StatefulWidget {
@@ -21,17 +19,15 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen>
     with TickerProviderStateMixin {
-  bool _checking = false;
-  bool _checkReg = false;
   final formKey = GlobalKey<FormState>();
   final formKeyReg = GlobalKey<FormState>();
-  final _auth = FirebaseAuth.instance;
   bool showProgress = false;
-  String email, password,confPassword,phoneNo;
+  String email, password,confPassword,phoneNo,displayName,surName;
   AnimationController _animationController;
   Animation<double> _curvedAnimation;
   FocusNode _focusNode = FocusNode();
   var animationStatus = 0;
+  int _state = 0;
   @override
   void initState() {
     super.initState();
@@ -139,8 +135,6 @@ class LoginScreenState extends State<LoginScreen>
         borderRadius: BorderRadius.circular(25.0),
       ),
       color: Colors.transparent,
-            child: ModalProgressHUD(
-              inAsyncCall: _checkReg,
               child: Column(
                 children:<Widget>[
                   Container(
@@ -171,6 +165,94 @@ class LoginScreenState extends State<LoginScreen>
                               height: 500,
                               child: new ListView(
                                 children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical:5.0),
+                                    child: TextFormField(
+                                      obscureText: false,
+                                      decoration: new InputDecoration(
+                                        prefixIcon: new Icon(Icons.person,color:Colors.white),
+                                        labelText: 'First Name',
+                                        labelStyle: TextStyle(color: Colors.white),
+                                        fillColor: Colors.white12,
+                                        filled: true,
+                                        border: new OutlineInputBorder(
+                                            borderRadius: new BorderRadius.circular(25.0),
+                                            borderSide: new BorderSide(
+                                              color: Colors.white,
+                                            )),
+                                        focusedBorder: new OutlineInputBorder(
+                                            borderRadius: new BorderRadius.circular(25.0),
+                                            borderSide: new BorderSide(
+                                              color: Colors.white,
+                                            )),
+                                        enabledBorder: new OutlineInputBorder(
+                                            borderRadius: new BorderRadius.circular(25.0),
+                                            borderSide: new BorderSide(
+                                              color: Colors.white,
+                                            )),
+                                      ),
+                                      validator: (val) {
+                                        if (val == 0) {
+                                          return 'First name can not be empty';
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      onChanged: (value) {
+                                        displayName = value; //get the value entered by user.
+                                      },
+                                      keyboardType: TextInputType.emailAddress,
+                                      style: new TextStyle(
+                                        height: 1.0,
+                                        fontSize: 14,
+                                        fontFamily: "Poppins",
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical:5.0),
+                                    child: TextFormField(
+                                      obscureText: false,
+                                      decoration: new InputDecoration(
+                                        prefixIcon: new Icon(Icons.person,color:Colors.white),
+                                        labelText: 'Last Name',
+                                        labelStyle: TextStyle(color: Colors.white),
+                                        fillColor: Colors.white12,
+                                        filled: true,
+                                        border: new OutlineInputBorder(
+                                            borderRadius: new BorderRadius.circular(25.0),
+                                            borderSide: new BorderSide(
+                                              color: Colors.white,
+                                            )),
+                                        focusedBorder: new OutlineInputBorder(
+                                            borderRadius: new BorderRadius.circular(25.0),
+                                            borderSide: new BorderSide(
+                                              color: Colors.white,
+                                            )),
+                                        enabledBorder: new OutlineInputBorder(
+                                            borderRadius: new BorderRadius.circular(25.0),
+                                            borderSide: new BorderSide(
+                                              color: Colors.white,
+                                            )),
+                                      ),
+                                      validator: (val) {
+                                        if (val == 0) {
+                                          return 'Last name can not be Empty';
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      onChanged: (value) {
+                                        surName = value; //get the value entered by user.
+                                      },
+                                      keyboardType: TextInputType.emailAddress,
+                                      style: new TextStyle(
+                                        height: 1.0,
+                                        fontSize: 14,
+                                        fontFamily: "Poppins",
+                                      ),
+                                    ),
+                                  ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(vertical:5.0),
                                     child: TextFormField(
@@ -354,25 +436,44 @@ class LoginScreenState extends State<LoginScreen>
                               ),
                             ),
                             Container(
-                              padding: EdgeInsets.only(top: 10),
-                              child: SizedBox(
-                                height: 60,
-                                width: 320,
-                                child: FlatButton(onPressed: () async {
-                                  if (formKeyReg.currentState.validate()) {
-                                    if (password == confPassword) {
-                                        signUp(email, password,'default', phoneNo,context);
-                                    }
-                                  }else{
-                                    Scaffold
-                                        .of(context)
-                                        .showSnackBar(SnackBar(content: Text('Password and Confirm password are not match')));                                }
-                                  },
-                                    shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-                                    color: Colors.white,
-                                    child: Text('SignUp',style: TextStyle(color: Colors.purple,fontWeight: FontWeight.bold),)),
-                              ),
-                            )
+                                padding: EdgeInsets.only(top: 10),
+                                child: SizedBox(
+                                  height: 60,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: width*0.01),
+                                    child :InkWell(
+                                      borderRadius: BorderRadius.circular(30),
+                                      onTap: () async{
+                                        try {
+                                          if (formKeyReg.currentState.validate()) {
+                                            if (password == confPassword) {
+                                              signUp(email, password,displayName,surName, phoneNo,context);
+                                              setState(() {
+                                                if (_state == 0)
+                                                animateButton();
+                                              });
+                                            }else{
+                                              Scaffold.of(context).showSnackBar(SnackBar(content: Text('Password and Confirm password are not match')));
+                                            }
+                                          }
+                                        }catch(e){
+                                        }
+                                      },
+                                      splashColor: Colors.blue,
+                                      highlightColor: Colors.blue,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(30),
+                                        ),
+                                        child: Center(
+                                          child: setUpButtonChild("SignUp"),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                            ), ////cut
                           ],
                         ),
                       ),
@@ -396,7 +497,6 @@ class LoginScreenState extends State<LoginScreen>
                     ),
                 ],
               ),
-            ),
     );
   }
   Widget _login(){
@@ -407,8 +507,6 @@ class LoginScreenState extends State<LoginScreen>
         borderRadius: BorderRadius.circular(25.0),
       ),
       color: Colors.transparent,
-      child: ModalProgressHUD(
-          inAsyncCall: _checking,
         child: Container(
           child: new ListView(
             padding: const EdgeInsets.all(0.0),
@@ -538,17 +636,35 @@ class LoginScreenState extends State<LoginScreen>
                                   padding: EdgeInsets.only(top: 10),
                                   child: SizedBox(
                                     height: 60,
-                                    width: width*0.7,
-                                    child: FlatButton(onPressed: () async {
-                                      if (formKey.currentState.validate()) {
-                                        _checking = true;
-                                        signIn(email, password, context);
-                                      }
-                                    },
-                                        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-                                        color: Colors.white,
-                                        child: Text('SignIn',style: TextStyle(color: Colors.purple,fontWeight: FontWeight.bold),),
-                                  ),
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(horizontal: width*0.01),
+                                      child :InkWell(
+                                        borderRadius: BorderRadius.circular(30),
+                                        onTap: () async{
+                                          try {
+                                            if (formKey.currentState.validate()) {
+                                              signIn(email, password, context);
+                                              setState(() {
+                                                if (_state == 0) {
+                                                  animateButton();
+                                                }
+                                              });}
+                                          }catch(e){
+                                          }
+                                        },
+                                        splashColor: Colors.blue,
+                                        highlightColor: Colors.blue,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(30),
+                                          ),
+                                          child: Center(
+                                            child: setUpButtonChild("SignIn"),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                 )
                                 )],
                             )
@@ -602,7 +718,38 @@ class LoginScreenState extends State<LoginScreen>
             ],
           ),
         ),
-      ),
     );
+  }
+  Widget setUpButtonChild(String text) {
+    if (_state == 0) {
+      return new Text(
+        text,
+        style: const TextStyle(
+          color: Colors.purple,
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    } else{
+      return ColorLoader(
+        dotOneColor: Colors.purple,
+        dotTwoColor: Colors.pink,
+        dotThreeColor: Colors.red,
+        dotType: DotType.circle,
+        duration: Duration(seconds:2),
+      );
+    }
+  }
+
+  void animateButton() {
+    setState(() {
+      _state = 1;
+    });
+
+    Timer(Duration(milliseconds: 2000), () {
+      setState(() {
+        _state = 2;
+      });
+    });
   }
 }

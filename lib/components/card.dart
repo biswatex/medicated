@@ -44,30 +44,62 @@ class _DoctorsCardState extends State<DoctorsCard> {
                   itemCount: snapshot.data.length,
                   itemBuilder: (_,index){
                     return Container(
-                      width: 220.0,
-                      child: GFCard(
-                        elevation: 10,
-                        boxFit: BoxFit.cover,
-                        title: GFListTile(
-                          avatar: GFAvatar(backgroundImage:NetworkImage(snapshot.data[index].data['image']), size:GFSize.LARGE,),
-                          title: Text(snapshot.data[index].data['name']),
-                          subTitle: Text(snapshot.data[index].data['dept']),
-                        ),
-                        content: Text(snapshot.data[index].data['Description'],maxLines:5,),
-                        buttonBar: GFButtonBar(
-                          alignment: WrapAlignment.end,
-                          children: <Widget>[
-                            FlatButton(
-                              child: Icon(Icons.star,color: Colors.yellow,),
-                              onPressed: (){},
+                      padding: EdgeInsets.symmetric(horizontal:5),
+                      width: 180.0,
+                      child: Stack(
+                        children:<Widget>[
+                          Container(
+                            padding: EdgeInsets.only(top:30),
+                            height: 250,
+                            width: 180,
+                            child: Card(
+                              elevation: 10,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              child:ListView(
+                                padding: EdgeInsets.only(top:30,right:5,left:10,bottom:10),
+                                  children:<Widget>[
+                                    Container(
+                                        padding: EdgeInsets.only(top:30),
+                                        child: Text(snapshot.data[index].data['name'],style: TextStyle(
+                                          color: Colors.black54,
+                                          fontSize: 16,
+                                        ),)),
+                                    Container(
+                                        padding: EdgeInsets.only(top:1,left:5),
+                                        child: Text(snapshot.data[index].data['Department'],style: TextStyle(
+                                          color: Colors.black54,
+                                          fontSize: 12,
+                                        ))),
+                                  ]),
                             ),
-                            FlatButton(
-                              child: Icon(Icons.favorite,color: Colors.pink),
-                              onPressed: (){},
+                          ),
+                          Align(
+                            alignment:Alignment.topCenter,
+                            child: Container(
+                              height: 80,
+                              width: 80,
+                                child: CircleAvatar(
+                                  backgroundImage: NetworkImage(snapshot.data[index].data['image']),
+                                  backgroundColor: Colors.indigoAccent,
+                                  child: Visibility(
+                                    visible: snapshot.data[index].data['online'],
+                                    child: Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: GFBadge(
+                                        size: GFSize.MEDIUM,
+                                        shape: GFBadgeShape.circle,
+                                        color: Colors.green,
+                                        border:BorderSide(color: Colors.white,width:2),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        ],
+                      )
                     );
                   });
             }

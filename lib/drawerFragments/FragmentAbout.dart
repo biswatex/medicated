@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class DragabbleScrollableSheetDemo extends StatefulWidget {
+class About extends StatefulWidget {
   @override
-  _DragabbleScrollableSheetDemoState createState() =>
-      _DragabbleScrollableSheetDemoState();
+  _AboutState createState() =>
+      _AboutState();
 }
 
-class _DragabbleScrollableSheetDemoState
-    extends State<DragabbleScrollableSheetDemo> {
+class _AboutState
+    extends State<About> {
   @override
   void initState() {
     // TODO: implement initState
