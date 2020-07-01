@@ -1,27 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medicated/components/CustomKFDrawer.dart';
 import 'package:medicated/Screens/Login/index.dart';
-import 'package:medicated/components/DataSearch.dart';
+import 'package:medicated/Screens/profile/PeofileScreen.dart';
+import 'package:medicated/drawerFragments/FragmentContactUs.dart';
+import 'package:medicated/drawerFragments/FragmentFeedback.dart';
+import 'Utility.dart';
 import 'package:medicated/drawerFragments/FragmentAbout.dart';
 import 'package:medicated/drawerFragments/FragmentSettings.dart';
 import 'package:medicated/drawerFragments/fragmentHome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class DrawerItem {
-  String title;
-  IconData icon;
-  DrawerItem(this.title, this.icon);
-}
 class HomePage extends StatefulWidget {
   final String title;
   final String uid;
-  HomePage({Key key, this.title,this.uid}) : super(key: key);
-  final drawerItems = [
-    new DrawerItem("Hone", Icons.home),
-    new DrawerItem("Settings", Icons.settings),
-    new DrawerItem("About", Icons.info)
-  ];
+  final String image;
+  HomePage({Key key, this.title,this.uid,this.image}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -29,28 +24,84 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class HomePageState extends State<HomePage> {
-
+class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   int counter = 10;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  int _selectedDrawerIndex = 0;
-  _getDrawerItemWidget(int pos) {
-    switch (pos) {
-      case 0:
-        return new FragmentHome();
-      case 1:
-        return new Settings();
-      case 2:
-        return new About();
-
-      default:
-        return new FragmentHome();
-    }
+  KFDrawerController _drawerController;
+  String _profileURL;
+  getData()async{
+    SharedPreferences prefs = SharedPreferences.getInstance() as SharedPreferences;
+    return prefs;
   }
-
-  _onSelectItem(int index) {
-    setState(() => _selectedDrawerIndex = index);
-    Navigator.of(context).pop(); // close the drawer
+  @override
+  // ignore: missing_return
+  Future<void> initState() {
+    getSF();
+    super.initState();
+    String name ;
+    String uide;
+    if(widget.title!=null && widget.uid != null) {
+      name = widget.title;
+      uide = widget.uid;
+    }
+    else{
+      uide ="Default@medicative.com";
+      name = "User";
+    }
+    _drawerController = KFDrawerController(
+      initialPage: ClassBuilder.fromString('FragmentHome'),
+      items: [
+        KFDrawerItem.initWithPage(
+          text: Text(name, style: TextStyle(color: Colors.white)),
+          subtitle: Text(uide, style: TextStyle(color: Colors.white)),
+          icon:CircleAvatar(
+            backgroundImage: NetworkImage(widget.image)),
+          page: ProfilePage(),
+          header: true,
+        ),
+        KFDrawerItem.initWithPage(
+          text: Text('Home', style: TextStyle(color: Colors.white)),
+          icon: Icon(Icons.home, color: Colors.white),
+          page: FragmentHome(),
+          header: false,
+        ),
+        KFDrawerItem.initWithPage(
+          text: Text(
+            'About',
+            style: TextStyle(color: Colors.white),
+          ),
+          icon: Icon(Icons.info, color: Colors.white),
+          page: About(),
+          header: false,
+        ),
+        KFDrawerItem.initWithPage(
+          text: Text(
+            'Settings',
+            style: TextStyle(color: Colors.white),
+          ),
+          icon: Icon(Icons.settings, color: Colors.white),
+          page: Settings(),
+          header: false,
+        ),
+        KFDrawerItem.initWithPage(
+          text: Text(
+            'Feedback',
+            style: TextStyle(color: Colors.white),
+          ),
+          icon: Icon(Icons.feedback, color: Colors.white),
+          page:FeedbackUs(),
+          header: false,
+        ),
+        KFDrawerItem.initWithPage(
+          text: Text(
+            'Contact Us',
+            style: TextStyle(color: Colors.white),
+          ),
+          icon: Icon(Icons.contact_phone, color: Colors.white),
+          page: ContactUs(),
+          header: false,
+        ),
+      ],
+    );
   }
   getSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -59,97 +110,32 @@ class HomePageState extends State<HomePage> {
   }
   @override
   Widget build(BuildContext context) {
-    getSF();
-    var drawerOptions = <Widget>[];
-    for (var i = 0; i < widget.drawerItems.length; i++) {
-      var d = widget.drawerItems[i];
-      drawerOptions.add(
-          new ListTile(
-            leading: new Icon(d.icon,color: Colors.black54,),
-            title: new Text(d.title),
-            selected: i == _selectedDrawerIndex,
-            onTap: () => _onSelectItem(i),
-          )
-      );
-    }
-    String name ;
-    String uide;
-    if(widget.title!=null && widget.uid != null) {
-      name = widget.title;
-      uide = widget.uid;
-    }
-    else{
-      uide ="1";
-      name = "User";
-    }
     return Scaffold(
-          key: _scaffoldKey,
-          appBar: AppBar(
-            backgroundColor: Color.fromARGB(255,51, 153, 204),
-            iconTheme: IconThemeData(color: Colors.white),
-            elevation: 0.0,
-            actions: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.search, color: Colors.white,),
-                onPressed: () {
-                  showSearch(context: context, delegate: DataSearch());
-                },
-              ),
-              Stack(
-                children: <Widget>[
-                  new IconButton(icon: Icon(Icons.notifications), onPressed: () {
-                    setState(() {
-                      counter = 0;
-                    });
-                  }),
-                  Positioned(
-                    right: 10,
-                    top: 10,
-                    child: new Container(
-                      padding: EdgeInsets.all(2),
-                      decoration: new BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      constraints: BoxConstraints(
-                        minWidth: 14,
-                        minHeight: 14,
-                      ),
-                      child: Text(
-                        '$counter',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 8,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+      body: KFDrawer(
+        controller: _drawerController,
+        footer: KFDrawerItem(
+          text: Text(
+            'Log Out',
+            style: TextStyle(color: Colors.white),
           ),
-          body: Center(
-            child: _getDrawerItemWidget(_selectedDrawerIndex),
+          icon: Icon(
+            Icons.input,
+            color: Colors.white,
           ),
-          drawer: new Drawer(
-            child:  new Column(
-                      children: <Widget>[
-                        new UserAccountsDrawerHeader(
-                            accountName: new Text(name), accountEmail:Text(uide)),
-                        new Column(children: drawerOptions),
-                        new RaisedButton(
-                          onPressed: () {
-                            FirebaseAuth.instance.signOut();
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginScreen()));
-                          },
-                          child: const Text('Logout'),
-                        ),
-                      ],
-                    )
-          )
+          onPressed: () {
+            FirebaseAuth.instance.signOut().then((value) =>
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen())));
+          },
+        ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.pink, Colors.blue],
+            tileMode: TileMode.repeated,
+          ),
+        ),
+      ),
     );
   }
 }

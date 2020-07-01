@@ -3,8 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medicated/HomeTabs/tab1.dart';
 import 'package:medicated/HomeTabs/tab4.dart';
+import 'package:medicated/components/CustomKFDrawer.dart';
 
-class FragmentHome extends StatefulWidget {
+// ignore: must_be_immutable
+class FragmentHome extends KFDrawerContent {
   @override
   _MainClassState createState() => _MainClassState();
 }
@@ -12,8 +14,9 @@ class FragmentHome extends StatefulWidget {
 class _MainClassState extends State<FragmentHome>
     with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
+  int counter = 10;
   final List<Widget> _widgetOptions = <Widget>[
-    tabHome(),
+    TabHome(),
     Text(
       'Index 2: School',
     ),
@@ -32,6 +35,51 @@ class _MainClassState extends State<FragmentHome>
   Widget build(BuildContext context) {
     return Container(
         child : Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            leading: Builder(
+              builder: (BuildContext context) {
+                return IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: widget.onMenuPressed,
+                );
+              },
+            ),
+            actions: <Widget>[
+              Stack(
+                children: <Widget>[
+                  new IconButton(icon: Icon(Icons.notifications), onPressed: () {
+                    setState(() {
+                      counter = 0;
+                    });
+                  }),
+                  Positioned(
+                    right: 10,
+                    top: 10,
+                    child: new Container(
+                      padding: EdgeInsets.all(2),
+                      decoration: new BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 14,
+                        minHeight: 14,
+                      ),
+                      child: Text(
+                        '$counter',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ]
+          ),
           body: Container(
             child: _widgetOptions.elementAt(_selectedIndex),
           ),

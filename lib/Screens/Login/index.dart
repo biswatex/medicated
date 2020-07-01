@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -89,8 +90,8 @@ class LoginScreenState extends State<LoginScreen>
   }
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
+    //var width = MediaQuery.of(context).size.width;
+    //var height = MediaQuery.of(context).size.height;
     timeDilation = 0.4;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     return
@@ -129,7 +130,7 @@ class LoginScreenState extends State<LoginScreen>
   }
   Widget _register(){
     var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
+    //var height = MediaQuery.of(context).size.height;
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(25.0),
@@ -192,6 +193,7 @@ class LoginScreenState extends State<LoginScreen>
                                             )),
                                       ),
                                       validator: (val) {
+                                        // ignore: unrelated_type_equality_checks
                                         if (val == 0) {
                                           return 'First name can not be empty';
                                         } else {
@@ -236,6 +238,7 @@ class LoginScreenState extends State<LoginScreen>
                                             )),
                                       ),
                                       validator: (val) {
+                                        // ignore: unrelated_type_equality_checks
                                         if (val == 0) {
                                           return 'Last name can not be Empty';
                                         } else {

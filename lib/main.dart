@@ -4,8 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medicated/Screens/Home/MainPage.dart';
 import 'package:medicated/Screens/Login/index.dart';
-void main() => runApp(new MyApp());
 
+import 'Screens/Home/Utility.dart';
+void main() {
+  ClassBuilder.registerClasses();
+  runApp(MyApp());
+}
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -20,12 +24,12 @@ class MyApp extends StatelessWidget {
 
 class Auth extends StatefulWidget {
   Auth({Key key}) : super(key: key);
-
   @override
   _SplashPageState createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<Auth> {
+class _SplashPageState extends State<Auth> with TickerProviderStateMixin {
+
   @override
   initState() {
     FirebaseAuth.instance
@@ -38,7 +42,7 @@ class _SplashPageState extends State<Auth> {
         {
           Firestore.instance.collection('user').document(currentUser.uid).get().then((value) =>
               Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => HomePage(title:value['name'],uid:value['email'],)),
+            MaterialPageRoute(builder: (context) => HomePage(title:value['name'],uid:value['email'],image:value['profilePics'],)),
           )),
           }
     })

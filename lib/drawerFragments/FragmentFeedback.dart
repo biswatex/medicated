@@ -2,15 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medicated/components/CustomKFDrawer.dart';
 
-// ignore: must_be_immutable
-class About extends KFDrawerContent {
+class FeedbackUs extends KFDrawerContent {
   @override
-  _AboutState createState() =>
-      _AboutState();
+  _FeedbackState createState() => _FeedbackState();
 }
 
-class _AboutState
-    extends State<About> {
+class _FeedbackState
+    extends State<FeedbackUs> {
   @override
   void initState() {
     super.initState();

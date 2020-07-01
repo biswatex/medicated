@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class ColorLoader extends StatefulWidget {
@@ -14,7 +13,7 @@ class ColorLoader extends StatefulWidget {
   ColorLoader({
     this.dotOneColor = Colors.redAccent,
     this.dotTwoColor = Colors.green,
-    this.dotThreeColor = Colors.blueAccent,
+    this.dotThreeColor = Colors.white,
     this.duration = const Duration(milliseconds: 1000),
     this.dotType = DotType.circle,
     this.dotIcon = const Icon(Icons.blur_on)

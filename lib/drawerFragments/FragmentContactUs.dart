@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:medicated/components/CustomKFDrawer.dart';
 
 // ignore: must_be_immutable
-class About extends KFDrawerContent {
+class ContactUs extends KFDrawerContent {
   @override
-  _AboutState createState() =>
-      _AboutState();
+  _ContactUsState createState() =>
+      _ContactUsState();
 }
 
-class _AboutState
-    extends State<About> {
+class _ContactUsState
+    extends State<ContactUs> {
   @override
   void initState() {
     super.initState();

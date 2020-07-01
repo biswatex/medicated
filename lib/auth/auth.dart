@@ -5,11 +5,10 @@ import 'package:medicated/Screens/Home/MainPage.dart';
 
 signIn(String email, String password,context) {
   try {
-    FirebaseUser user ;
     FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password)
         .then((currentUser) => Firestore.instance.collection("user").document(currentUser.user.uid).get())
         .then((DocumentSnapshot result) => Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) => HomePage(title: result["name"],uid:result['email'],))));
+                builder: (context) => HomePage(title: result["name"],uid:result['email'],image:result['profilePics']))));
   } catch (e){
    return AlertDialog(
         title: Text('error'),
