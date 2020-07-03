@@ -374,7 +374,7 @@ class KFDrawerItem extends StatelessWidget {
   Widget build(BuildContext context) {
     if(header==true){
       return Container(
-        alignment: Alignment.topRight,
+        alignment: Alignment.topLeft,
         padding: EdgeInsets.symmetric(vertical: 2.0),
         color: Colors.transparent,
         child: ListTile(

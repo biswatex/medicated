@@ -1,17 +1,22 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:medicated/auth/auth.dart';
 import 'package:medicated/components/Customloder.dart';
 import 'package:medicated/components/flipView.dart';
 import 'package:medicated/components/googleSignIn.dart';
 import 'package:medicated/components/passwordReset.dart';
-
+import 'package:path/path.dart' as Path;
 import 'styles.dart';
+import 'dart:io';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key key}) : super(key: key);
   @override
@@ -29,6 +34,35 @@ class LoginScreenState extends State<LoginScreen>
   FocusNode _focusNode = FocusNode();
   var animationStatus = 0;
   int _state = 0;
+  File _image;
+  String _uploadedFileURL;
+  final formKeyUpdate = GlobalKey<FormState>();
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _image = image;
+      print('Image Path $_image');
+    });
+  }
+  Future UpdateProfile() async {
+    final FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    final uid = user.uid;
+    StorageReference storageReference = FirebaseStorage.instance
+        .ref()
+        .child('profilePics/${uid + Path.extension(_image.path)}');
+    StorageUploadTask uploadTask = storageReference.putFile(_image);
+    await uploadTask.onComplete.then((value) =>
+        storageReference.getDownloadURL().then((fileURL) {
+          setState(() {
+            _uploadedFileURL = fileURL;
+          });
+        })).then((value) =>
+        Firestore.instance.collection('user').document(uid).updateData(
+            {
+              "profilePics": _uploadedFileURL,
+            }
+        ));
+  }
   @override
   void initState() {
     super.initState();
@@ -450,7 +484,7 @@ class LoginScreenState extends State<LoginScreen>
                                         try {
                                           if (formKeyReg.currentState.validate()) {
                                             if (password == confPassword) {
-                                              signUp(email, password,displayName,surName, phoneNo,context);
+                                              await signUp(email,password,displayName,surName,phoneNo,context);
                                               setState(() {
                                                 if (_state == 0)
                                                 animateButton();
@@ -544,6 +578,10 @@ class LoginScreenState extends State<LoginScreen>
                                     color: Colors.white,
                                   ),),
                                 ),
+                                //profile pic
+
+
+
                                 Padding(
                                   padding: const EdgeInsets.symmetric(vertical:5.0),
                                   child: TextFormField(

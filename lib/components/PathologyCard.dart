@@ -7,10 +7,16 @@ class PathologyCard extends StatefulWidget {
 }
 
 class _PathologyCardState extends State<PathologyCard> {
+  Future data;
   Future getDataCat() async {
     var fireStore = Firestore.instance;
     QuerySnapshot data =await fireStore.collection("Pathology").getDocuments();
     return data.documents;
+  }
+  @override
+  void initState() {
+    super.initState();
+    data = getDataCat();
   }
   @override
   Widget build(BuildContext context) {
@@ -18,7 +24,7 @@ class _PathologyCardState extends State<PathologyCard> {
       margin: EdgeInsets.all(5),
       height: 200,
       child: FutureBuilder(
-          future: getDataCat(),
+          future: data,
           builder: (_,snapshot){
             if(snapshot.connectionState == ConnectionState.waiting){
               return Shimmer.fromColors(

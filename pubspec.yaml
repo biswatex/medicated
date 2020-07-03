@@ -37,6 +37,9 @@ dependencies:
   firebase_storage: ^3.1.6
   font_awesome_flutter: ^8.2.0
   image_picker: ^0.5.3+1
+  google_maps_flutter: ^0.5.28+1
+  geolocator: ^5.3.2+2
+
 
 
 

@@ -15,7 +15,6 @@ class TabHome extends StatefulWidget {
 class _TabHomeState extends State<TabHome>
     with SingleTickerProviderStateMixin {
   AnimationController _controllerr;
-
   @override
   void initState() {
     super.initState();

@@ -1,16 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medicated/components/CustomKFDrawer.dart';
 import 'package:medicated/Screens/Login/index.dart';
 import 'package:medicated/Screens/profile/PeofileScreen.dart';
+import 'package:medicated/components/CustomKFDrawer.dart';
+import 'package:medicated/drawerFragments/FragmentAbout.dart';
 import 'package:medicated/drawerFragments/FragmentContactUs.dart';
 import 'package:medicated/drawerFragments/FragmentFeedback.dart';
-import 'Utility.dart';
-import 'package:medicated/drawerFragments/FragmentAbout.dart';
 import 'package:medicated/drawerFragments/FragmentSettings.dart';
 import 'package:medicated/drawerFragments/fragmentHome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'Utility.dart';
 
 class HomePage extends StatefulWidget {
   final String title;
@@ -27,7 +28,6 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   int counter = 10;
   KFDrawerController _drawerController;
-  String _profileURL;
   getData()async{
     SharedPreferences prefs = SharedPreferences.getInstance() as SharedPreferences;
     return prefs;
@@ -39,22 +39,30 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     super.initState();
     String name ;
     String uide;
-    if(widget.title!=null && widget.uid != null) {
+    String image;
+    if(widget.title!=null && widget.uid != null && widget.image !=null) {
       name = widget.title;
       uide = widget.uid;
+      image = widget.image;
     }
-    else{
+    else if(widget.image == null && widget.title !=null && widget.uid != null){
+      name = widget.title;
+      uide = widget.uid;
+      image = widget.image;
+      image = "https://cdn3.iconfinder.com/data/icons/avatars-round-flat/33/avat-01-512.png";
+    }else{
       uide ="Default@medicative.com";
       name = "User";
+      image = "https://cdn3.iconfinder.com/data/icons/avatars-round-flat/33/avat-01-512.png";
     }
     _drawerController = KFDrawerController(
       initialPage: ClassBuilder.fromString('FragmentHome'),
       items: [
         KFDrawerItem.initWithPage(
           text: Text(name, style: TextStyle(color: Colors.white)),
-          subtitle: Text(uide, style: TextStyle(color: Colors.white)),
+          subtitle: Text(uide, style: TextStyle(color: Colors.white,fontSize:12),),
           icon:CircleAvatar(
-            backgroundImage: NetworkImage(widget.image)),
+            backgroundImage: NetworkImage(image)),
           page: ProfilePage(),
           header: true,
         ),

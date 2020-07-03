@@ -10,10 +10,16 @@ class CategoryCard extends StatefulWidget {
 }
 
 class _CategoryCardState extends State<CategoryCard> {
+  Future Data;
   Future getDataCat() async {
     var fireStore = Firestore.instance;
     QuerySnapshot data =await fireStore.collection("category").getDocuments();
     return data.documents;
+  }
+  @override
+  void initState() {
+    super.initState();
+    Data = getDataCat();
   }
   @override
   Widget build(BuildContext context) {
@@ -21,7 +27,7 @@ class _CategoryCardState extends State<CategoryCard> {
       margin: EdgeInsets.all(5),
       height: 200,
       child: FutureBuilder(
-          future: getDataCat(),
+          future: Data,
           builder: (_,snapshot){
             if(snapshot.connectionState == ConnectionState.waiting){
               return Shimmer.fromColors(
