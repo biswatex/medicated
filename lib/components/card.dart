@@ -1,13 +1,13 @@
-import 'dart:html';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:getflutter/getflutter.dart';
 import 'package:medicated/Screens/Home/ItemSelect.dart';
+import 'package:medicated/components/GetDistance.dart';
 import 'package:shimmer/shimmer.dart';
 
 class DoctorsCard extends StatefulWidget {
@@ -17,8 +17,6 @@ class DoctorsCard extends StatefulWidget {
 
 class _DoctorsCardState extends State<DoctorsCard> {
   Future Data;
-  Position position;
-  String distance;
   Future getData() async {
     var fireStore = Firestore.instance;
     Query query = fireStore.collection("doctors").limit(4);
@@ -32,14 +30,6 @@ class _DoctorsCardState extends State<DoctorsCard> {
   void initState() {
     super.initState();
     Data = getData();
-  }
-  Distance(pos) async{
-    position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    double distanceInMeters = await Geolocator().distanceBetween(pos.latitute,pos.longitude,position.latitude,position.longitude);
-    setState(() {
-      distance = distanceInMeters.toString();
-    });
-    return distanceInMeters.toString();
   }
   @override
   Widget build(BuildContext context) {
@@ -59,7 +49,6 @@ class _DoctorsCardState extends State<DoctorsCard> {
                 ),
               );
             }else{
-              Distance(snapshot.data['address']);
               return Column(
                 children:<Widget>[
                   Container(
@@ -92,7 +81,7 @@ class _DoctorsCardState extends State<DoctorsCard> {
                                 ),
                                   titleText:snapshot.data[index].data['name'],
                                   subtitleText:snapshot.data[index].data['Department'],
-                                description: Text(distance),
+                                description: GetDistance(position: snapshot.data[index].data['address'],),
                                 padding: EdgeInsets.all(0),
                                 margin: EdgeInsets.all(5),
                                 icon: Container(child: Row(
