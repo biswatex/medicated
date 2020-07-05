@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +14,7 @@ class DoctorsCard extends StatefulWidget {
 }
 
 class _DoctorsCardState extends State<DoctorsCard> {
-  Future Data;
+  Future futureData;
   Future getData() async {
     var fireStore = Firestore.instance;
     Query query = fireStore.collection("doctors").limit(4);
@@ -29,14 +27,14 @@ class _DoctorsCardState extends State<DoctorsCard> {
   @override
   void initState() {
     super.initState();
-    Data = getData();
+    futureData = getData();
   }
   @override
   Widget build(BuildContext context) {
     return Container(
       width:MediaQuery.of(context).size.width,
       child: FutureBuilder(
-          future: Data,
+          future: futureData,
           builder: (_,snapshot){
             if(snapshot.connectionState == ConnectionState.waiting){
               return Shimmer.fromColors(
@@ -52,45 +50,41 @@ class _DoctorsCardState extends State<DoctorsCard> {
               return Column(
                 children:<Widget>[
                   Container(
-                    height:350 ,
+                    height:MediaQuery.of(context).size.height*0.55 ,
                     margin: EdgeInsets.symmetric(horizontal: 10),
                     child: ListView.builder(
-                      physics: ClampingScrollPhysics(),
+                      physics: NeverScrollableScrollPhysics(),
                         scrollDirection: Axis.vertical,
                         itemCount: snapshot.data.length,
                         itemBuilder: (_,index){
                           return Container(
-                            width: 180.0,
+                            width: MediaQuery.of(context).size.width*0.8,
                             child: GestureDetector(
                               onTap: ()=>naviagteToDetail(snapshot.data[index]),
                               child: GFListTile(
-                                color: Colors.white,
+                                color: Colors.black12,
                                 avatar: GFAvatar(
-                                    radius: 40,
+                                  backgroundColor: Colors.transparent,
+                                  shape: GFAvatarShape.standard,
+                                    radius: MediaQuery.of(context).size.width*0.1,
                                     backgroundImage:NetworkImage( snapshot.data[index].data['image']),
-                                    child:Padding(
-                                      padding: const EdgeInsets.only(bottom:4.0,right:4.0),
-                                      child: Align(
+                                    child: Align(
                                         alignment: Alignment.bottomRight,
                                         child: GFBadge(
                                           shape: GFBadgeShape.circle,
                                           color: Colors.green,
                                         ),
                                       ),
-                                    ),
                                 ),
                                   titleText:snapshot.data[index].data['name'],
-                                  subtitleText:snapshot.data[index].data['Department'],
-                                description: GetDistance(position: snapshot.data[index].data['address'],),
-                                padding: EdgeInsets.all(0),
+                                  subtitleText:"  "+snapshot.data[index].data['Department'],
+                                description: GetDistance(position:snapshot.data[index].data['address'],),
+                                padding: EdgeInsets.all(10),
                                 margin: EdgeInsets.all(5),
-                                icon: Container(child: Row(
+                                icon: Container(child: Column(
                                   children: [
-                                    Icon(Icons.star),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left:4.0),
-                                      child: Text("5.0"),
-                                    ),
+                                    Icon(Icons.star,color: Colors.amberAccent,),
+                                     Text("5.0"),
                                   ],
                                 )),
                               ),
@@ -98,13 +92,6 @@ class _DoctorsCardState extends State<DoctorsCard> {
                           );
                         }),
                   ),
-                  Container(
-                    height: 20,
-                    child: FlatButton(
-                      onPressed: null,
-                      child: Text("View all"),
-                    ),
-                  )
                 ],
               );
             }

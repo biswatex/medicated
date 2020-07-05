@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class _CategoryCardState extends State<CategoryCard> {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(5),
-      height: 200,
+      height: MediaQuery.of(context).size.height*0.3,
       child: FutureBuilder(
           future: Data,
           builder: (_,snapshot){
@@ -50,45 +51,74 @@ class _CategoryCardState extends State<CategoryCard> {
                   itemCount: snapshot.data.length,
                   itemBuilder: (_,index){
                     return Container(
-                      padding: EdgeInsets.only(left:10,right: 10,bottom: 20,top: 5),
-                      height: 180,
-                      width: 160,
+                      padding: EdgeInsets.only(left:8,right: 8,bottom: 10),
+                      height: MediaQuery.of(context).size.height*0.6,
+                      width: MediaQuery.of(context).size.width*0.4,
                           child: Stack(
                             children:<Widget>[
                               Align(
                                 alignment: Alignment.bottomRight,
                                 child: Container(
-                                  height: 185,
-                                  width: 150,
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:BorderRadius.only(topLeft:Radius.circular(15),topRight: Radius.circular(15),bottomRight: Radius.circular(15),bottomLeft: Radius.circular(15))
-                                    ),
-                                      elevation: 10,
+                                  padding: EdgeInsets.only(top:20),
+                                  height: MediaQuery.of(context).size.height*0.3,
+                                  width: MediaQuery.of(context).size.width*0.4,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          boxShadow: [BoxShadow(
+                                            color: Color(int.parse("0xff"+snapshot.data[index].data['color'])),
+                                            blurRadius: 10.0,
+                                          ),],
+                                          borderRadius: BorderRadius.only(
+                                            topLeft:Radius.circular(10),
+                                            topRight:Radius.circular(80),
+                                            bottomRight:Radius.circular(10),
+                                            bottomLeft:Radius.circular(10),
+                                          ),
+                                          gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                              colors: [Color(int.parse("0xff"+snapshot.data[index].data['color'])), Color(int.parse("0xff"+snapshot.data[index].data['color_2']))])
+                                      ),
                                   ),
                                 ),
                               ),
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Container(
-                                  padding: EdgeInsets.all(15),
-                                    decoration: BoxDecoration(
-                                        color:Color(int.parse("0xff"+snapshot.data[index].data['colorLogo'])),
-                                        borderRadius: BorderRadius.all(Radius.circular(10))
-                                    ),
-                                  height: 80,
-                                    width: 80,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white24,
+                                      borderRadius: BorderRadius.all(Radius.circular(200))
+                                  ),
+                                  padding: EdgeInsets.all(0),
+                                  height: MediaQuery.of(context).size.height*0.125,
+                                    width: MediaQuery.of(context).size.height*0.125,
                                     child: Image(image:NetworkImage(snapshot.data[index].data['image']),)),
                               ),
                               Align(
-                                alignment: Alignment.bottomCenter,
+                                alignment: Alignment.bottomLeft,
                                 child: Container(
-                                    padding: EdgeInsets.only(left:25,right: 20,top: 20,bottom: 25),
-                                    child: Text(snapshot.data[index].data['title'],style:TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(int.parse("0xff"+snapshot.data[index].data['colorText'])),
-                                    ),)),
+                                  padding: EdgeInsets.symmetric(horizontal:2),
+                                    child: ListTile(
+                                      title: AutoSizeText(
+                                       snapshot.data[index].data['title'],
+                                        maxLines: 1,
+                                        style:TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      subtitle: Padding(
+                                        padding: const EdgeInsets.only(left:2.0),
+                                        child: AutoSizeText(
+                                          snapshot.data[index].data['description'],
+                                          maxLines:3,
+                                          style:TextStyle(
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    )),
                               ),
                             ],
                           ),

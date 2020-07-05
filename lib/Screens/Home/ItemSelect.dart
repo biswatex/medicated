@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +69,8 @@ class _DetailState extends State<Detail> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(bottom: 4.0),
-                              child: Text(widget.details.data['name'],
+                              child: AutoSizeText(widget.details.data['name'],
+                                  maxLines:1,
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
@@ -77,7 +79,7 @@ class _DetailState extends State<Detail> {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 4.0),
-                              child: Text(widget.details.data['Department'],
+                              child: AutoSizeText("  "+widget.details.data['Department'],
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
@@ -90,14 +92,14 @@ class _DetailState extends State<Detail> {
                               child: Container(
                                 height: 20,
                                 child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Icon(Icons.star, color: Colors.yellow,),
-                                    Text('5.0'),
+                                    Text('  5.0'),
                                     SizedBox(width: 10,),
                                     Icon(Icons.favorite,
                                       color: Colors.pinkAccent,),
-                                    Text('891 Likes')
+                                    AutoSizeText(' 891 like',maxLines:1,)
                                   ],
                                 ),
                               ),
@@ -105,9 +107,10 @@ class _DetailState extends State<Detail> {
                             Container(
                               height: 20,
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Icon(Icons.person, color: Colors.blue,),
-                                  Text('Upto 4592 Clients')
+                                  AutoSizeText('UpTo 4592 Clients')
                                 ],
                               ),
                             ),
@@ -123,7 +126,8 @@ class _DetailState extends State<Detail> {
                 ),
                 ListTile(
                   leading: Icon(Icons.location_on),
-                  title: Text("address"),
+                  title: Text("Location"),
+                  subtitle: Text("Mankundu Station Road 712139"),
                 ),
                 Container(
                   padding: EdgeInsets.all(20),

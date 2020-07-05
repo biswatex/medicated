@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +13,14 @@ class GetDistance extends StatefulWidget {
 class _GetDistanceState extends State<GetDistance> {
   Position position;
   double distance;
+  Future Local;
   double roundDouble(double value, int places){
     double mod = pow(10.0, places);
     return ((value * mod).round().toDouble() / mod);
+  }
+  initState(){
+    super.initState();
+    Local = Distance(widget.position);
   }
   Future<double> Distance(GeoPoint pos) async{
     position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
@@ -29,9 +33,8 @@ class _GetDistanceState extends State<GetDistance> {
   }
   @override
   Widget build(BuildContext context) {
-    Distance(widget.position);
     return Container(
-      child: Text(distance.toString()+" Km away",style: TextStyle(color:Colors.grey),),
+      child: Text("  "+distance.toString()+" Km away",style: TextStyle(color:Colors.grey),),
     );
   }
 }

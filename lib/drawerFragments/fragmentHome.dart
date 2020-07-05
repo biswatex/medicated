@@ -80,10 +80,10 @@ class _MainClassState extends State<FragmentHome>
               ),
             ]
           ),
-          body: Container(
+          body: TabHome(),/*Container(
             child: _widgetOptions.elementAt(_selectedIndex),
-          ),
-          bottomNavigationBar: BubbleBottomBar(
+          ),*/
+          /*bottomNavigationBar: BubbleBottomBar(
             opacity: .2,
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
@@ -97,7 +97,7 @@ class _MainClassState extends State<FragmentHome>
               BubbleBottomBarItem(backgroundColor: Colors.indigo, icon: Icon(Icons.timeline, color: Colors.black,), activeIcon: Icon(Icons.timeline, color: Colors.indigo,), title: Text("Track")),
               BubbleBottomBarItem(backgroundColor: Colors.green, icon: Icon(Icons.account_circle, color: Colors.black,), activeIcon: Icon(Icons.account_circle, color: Colors.green,), title: Text("Account"))
             ],
-          ),
+          ),*/
         ),
     );
   }
