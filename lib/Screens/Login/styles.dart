@@ -7,7 +7,7 @@ DecorationImage backgroundImage = new DecorationImage(
 
 DecorationImage tick = new DecorationImage(
   image: new AssetImage('assets/images/M.png'),
-  fit: BoxFit.cover,
+  fit: BoxFit.fill,
 );
 DecorationImage googleimg = new DecorationImage(
   image: new AssetImage('assets/images/google.png'),

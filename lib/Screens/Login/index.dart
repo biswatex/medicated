@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -127,12 +128,12 @@ class LoginScreenState extends State<LoginScreen>
     //var width = MediaQuery.of(context).size.width;
     //var height = MediaQuery.of(context).size.height;
     timeDilation = 0.4;
+    double width = MediaQuery.of(context).size.width;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     return
         (new WillPopScope(
           onWillPop: _onWillPop,
                child : Scaffold(
-
                 body: new Container(
                 decoration: new BoxDecoration(
                     gradient: new LinearGradient(
@@ -149,7 +150,11 @@ class LoginScreenState extends State<LoginScreen>
                       image: backgroundImage,
                     ),
                               child: Padding(
-                                padding: const EdgeInsets.all(30.0),
+                                padding: EdgeInsets.only(
+                                    right:width*0.02 ,
+                                    top:width*0.09,
+                                    bottom:width*0.02 ,
+                                    left:width*0.02),
                                 child: FlipView(
                                   animationController: _curvedAnimation,
                                   front: _login(),
@@ -170,89 +175,86 @@ class LoginScreenState extends State<LoginScreen>
         borderRadius: BorderRadius.circular(25.0),
       ),
       color: Colors.transparent,
-              child: Column(
+              child: ListView(
+                padding: EdgeInsets.all(0),
+                shrinkWrap: true,
                 children:<Widget>[
-                  Container(
-                    width: width*0.4,
-                    margin: EdgeInsets.only(top: 50),
-                    alignment: Alignment.center,
-                    decoration: new BoxDecoration(
-                      image: tick,
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Container(
+                      margin:EdgeInsets.symmetric(vertical:10),
+                      child: Text('Mediacative',style:
+                      TextStyle(
+                        fontFamily: 'Museo',
+                        fontSize:22,
+                        color: Colors.white,
+                      ),),
                     ),
-                  ),
-                  Container(
-                    margin:EdgeInsets.only(bottom: 10),
-                    child: Text('medicated',style:
-                    TextStyle(
-                      fontFamily: 'Sriracha',
-                      fontSize:22,
-                      color: Colors.white,
-                    ),),
                   ),
                   Form(
                      key:formKeyReg,
                       child: Container(
-                        padding: EdgeInsets.only(top: 2),
-                        margin: new EdgeInsets.symmetric(horizontal: 70.0),
+                        margin: new EdgeInsets.symmetric(horizontal:width*0.07),
                         child: Column(
                           children:<Widget>[
                             Container(
-                              height: 500,
-                              child: new ListView(
+                              height:MediaQuery.of(context).size.height*0.6,
+                              child: ListView(
+                                padding: EdgeInsets.all(0),
                                 children: <Widget>[
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(vertical:5.0),
-                                    child: TextFormField(
-                                      obscureText: false,
-                                      decoration: new InputDecoration(
-                                        prefixIcon: new Icon(Icons.person,color:Colors.white),
-                                        labelText: 'First Name',
-                                        labelStyle: TextStyle(color: Colors.white),
-                                        fillColor: Colors.white12,
-                                        filled: true,
-                                        border: new OutlineInputBorder(
-                                            borderRadius: new BorderRadius.circular(25.0),
-                                            borderSide: new BorderSide(
-                                              color: Colors.white,
-                                            )),
-                                        focusedBorder: new OutlineInputBorder(
-                                            borderRadius: new BorderRadius.circular(25.0),
-                                            borderSide: new BorderSide(
-                                              color: Colors.white,
-                                            )),
-                                        enabledBorder: new OutlineInputBorder(
-                                            borderRadius: new BorderRadius.circular(25.0),
-                                            borderSide: new BorderSide(
-                                              color: Colors.white,
-                                            )),
-                                      ),
-                                      validator: (val) {
-                                        // ignore: unrelated_type_equality_checks
-                                        if (val == 0) {
-                                          return 'First name can not be empty';
-                                        } else {
-                                          return null;
-                                        }
-                                      },
-                                      onChanged: (value) {
-                                        displayName = value; //get the value entered by user.
-                                      },
-                                      keyboardType: TextInputType.emailAddress,
-                                      style: new TextStyle(
-                                        height: 1.0,
-                                        fontSize: 14,
-                                        fontFamily: "Poppins",
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical:5.0),
-                                    child: TextFormField(
-                                      obscureText: false,
-                                      decoration: new InputDecoration(
-                                        prefixIcon: new Icon(Icons.person,color:Colors.white),
-                                        labelText: 'Last Name',
-                                        labelStyle: TextStyle(color: Colors.white),
+                                          padding: EdgeInsets.symmetric(vertical:2.0),
+                                          child: TextFormField(
+                                            obscureText: false,
+                                            decoration: new InputDecoration(
+                                              prefixIcon: new Icon(Icons.person,color:Colors.white),
+                                              labelText: 'First Name',
+                                              labelStyle: TextStyle(color: Colors.white),
+                                              fillColor: Colors.white12,
+                                              filled: true,
+                                              border: new OutlineInputBorder(
+                                                  borderRadius: new BorderRadius.circular(25.0),
+                                                  borderSide: new BorderSide(
+                                                    color: Colors.white,
+                                                  )),
+                                              focusedBorder: new OutlineInputBorder(
+                                                  borderRadius: new BorderRadius.circular(25.0),
+                                                  borderSide: new BorderSide(
+                                                    color: Colors.white,
+                                                  )),
+                                              enabledBorder: new OutlineInputBorder(
+                                                  borderRadius: new BorderRadius.circular(25.0),
+                                                  borderSide: new BorderSide(
+                                                    color: Colors.white,
+                                                  )),
+                                            ),
+                                            validator: (val) {
+                                              // ignore: unrelated_type_equality_checks
+                                              if (val == 0) {
+                                                return 'First name can not be empty';
+                                              } else {
+                                                return null;
+                                              }
+                                            },
+                                            onChanged: (value) {
+                                              displayName = value; //get the value entered by user.
+                                            },
+                                            keyboardType: TextInputType.emailAddress,
+                                            style: new TextStyle(
+                                              height: 1.0,
+                                              fontSize: 14,
+                                              fontFamily: "Poppins",
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(vertical:2.0),
+                                          child: TextFormField(
+                                            obscureText: false,
+                                            decoration: new InputDecoration(
+                                              prefixIcon: new Icon(Icons.person,color:Colors.white),
+                                              labelText: 'Last Name',
+                                              labelStyle: TextStyle(color: Colors.white),
                                         fillColor: Colors.white12,
                                         filled: true,
                                         border: new OutlineInputBorder(
@@ -291,11 +293,11 @@ class LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(vertical:5.0),
+                                    padding: const EdgeInsets.symmetric(vertical:2.0),
                                     child: TextFormField(
                                       obscureText: false,
                                       decoration: new InputDecoration(
-                                        prefixIcon: new Icon(Icons.person,color:Colors.white),
+                                        prefixIcon: new Icon(Icons.email,color:Colors.white),
                                         labelText: 'Email',
                                         labelStyle: TextStyle(color: Colors.white),
                                         fillColor: Colors.white12,
@@ -338,11 +340,11 @@ class LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(vertical:5.0),
+                                    padding: const EdgeInsets.symmetric(vertical:2.0),
                                     child: TextFormField(
                                       obscureText: false,
                                       decoration: new InputDecoration(
-                                        prefixIcon: new Icon(Icons.person,color:Colors.white),
+                                        prefixIcon: new Icon(Icons.vpn_key,color:Colors.white),
                                         labelText: 'Password',
                                         labelStyle: TextStyle(color: Colors.white),
                                         fillColor: Colors.white12,
@@ -382,11 +384,11 @@ class LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(vertical:5.0),
+                                    padding: const EdgeInsets.symmetric(vertical:2.0),
                                     child: TextFormField(
                                       obscureText: false,
                                       decoration: new InputDecoration(
-                                        prefixIcon: new Icon(Icons.person,color:Colors.white),
+                                        prefixIcon: new Icon(Icons.vpn_key,color:Colors.white),
                                         labelText: 'Confirm Password',
                                         labelStyle: TextStyle(color: Colors.white),
                                         fillColor: Colors.white12,
@@ -426,7 +428,7 @@ class LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(vertical:5.0),
+                                    padding: const EdgeInsets.symmetric(vertical:2.0),
                                     child: TextFormField(
                                       obscureText: false,
                                       decoration: new InputDecoration(
@@ -473,9 +475,9 @@ class LoginScreenState extends State<LoginScreen>
                               ),
                             ),
                             Container(
-                                padding: EdgeInsets.only(top: 10),
+                                padding: EdgeInsets.only(top:10),
                                 child: SizedBox(
-                                  height: 60,
+                                  height: width*0.15,
                                   child: Container(
                                     padding: EdgeInsets.symmetric(horizontal: width*0.01),
                                     child :InkWell(
@@ -511,27 +513,27 @@ class LoginScreenState extends State<LoginScreen>
                                   ),
                                 )
                             ), ////cut
+                            FlatButton(
+                              padding: EdgeInsets.only(
+                                bottom: 10.0,
+                              ),
+                              onPressed: (){_flip(false);},
+                              child: Text(
+                                "Already an account? Sign In",
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: true,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    letterSpacing: 0.5,
+                                    color: Colors.white,
+                                    fontSize: 14.0),
+                              ),
+                            ),
                           ],
                         ),
                       ),
                   ),
-                  FlatButton(
-                      padding: const EdgeInsets.only(
-                        bottom: 10.0,
-                      ),
-                      onPressed: (){_flip(false);},
-                      child: new Text(
-                        "Already an account? Sign In",
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: true,
-                        style: new TextStyle(
-                            fontWeight: FontWeight.w300,
-                            letterSpacing: 0.5,
-                            color: Colors.white,
-                            fontSize: 14.0),
-                      ),
-                    ),
                 ],
               ),
     );
@@ -554,11 +556,11 @@ class LoginScreenState extends State<LoginScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Container(
-                        width: width*0.5,
-                        height: height*0.2,
+                        width: width*0.2,
+                        height: width*0.2,
                         margin: EdgeInsets.only(top: 20),
                         alignment: Alignment.center,
-                        decoration: new BoxDecoration(
+                        decoration: BoxDecoration(
                           image: tick,
                         ),
                       ),
@@ -570,18 +572,14 @@ class LoginScreenState extends State<LoginScreen>
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
                                 Container(
-                                  margin:EdgeInsets.only(bottom: 15),
-                                  child: Text('medicated',style:
+                                  margin:EdgeInsets.all(5),
+                                  child: Text('Mediacative',style:
                                   TextStyle(
-                                    fontFamily: 'Sriracha',
+                                    fontFamily: 'Museo',
                                     fontSize:22,
                                     color: Colors.white,
                                   ),),
                                 ),
-                                //profile pic
-
-
-
                                 Padding(
                                   padding: const EdgeInsets.symmetric(vertical:5.0),
                                   child: TextFormField(
@@ -674,9 +672,9 @@ class LoginScreenState extends State<LoginScreen>
                                   ),
                                 ),
                                 Container(
-                                  padding: EdgeInsets.only(top: 10),
+                                  padding: EdgeInsets.symmetric(vertical:5),
                                   child: SizedBox(
-                                    height: 60,
+                                    height: width*0.15,
                                     child: Container(
                                       padding: EdgeInsets.symmetric(horizontal: width*0.01),
                                       child :InkWell(
@@ -712,44 +710,35 @@ class LoginScreenState extends State<LoginScreen>
                         ),
                       ),
                       Container(
+                        padding: EdgeInsets.symmetric(vertical:width*0.02),
+                        width: width*0.35,
                         alignment: AlignmentDirectional.center,
-                        child: FlatButton(
-                          padding: const EdgeInsets.only(
-                            top: 20.0,
-                            right: 10,
-                          ),
-                          onPressed:() =>  displayBottomSheet(context),
-                          child: new Text(
+                        child: GestureDetector(
+                          onTap:() =>  displayBottomSheet(context),
+                          child:  AutoSizeText(
                             "Forgot password ?",
                             textAlign: TextAlign.end,
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
+                            maxLines: 1,
                             style: new TextStyle(
                                 fontWeight: FontWeight.w300,
-                                letterSpacing: 0.5,
-                                color: Colors.white,
-                                fontSize: 14.0),
+                                color: Colors.white),
                           ),
                         ),
                       )
                     ],
                   ),
                   Container(
-                    child :FlatButton(
-                      padding: const EdgeInsets.only(
-                        bottom: 10.0,
-                      ),
-                      onPressed: (){_flip(true);},
-                      child: new Text(
+                    width: width*0.55,
+                    padding: EdgeInsets.symmetric(vertical:width*0.02),
+                    child :GestureDetector(
+                      onTap: (){_flip(true);},
+                      child: AutoSizeText(
                         "Don't have an account? Sign Up",
                         textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: true,
-                        style: new TextStyle(
+                        maxLines: 1,
+                        style: TextStyle(
                             fontWeight: FontWeight.w300,
-                            letterSpacing: 0.5,
-                            color: Colors.white,
-                            fontSize: 14.0),
+                            color: Colors.white),
                       ),
                     ),
                   ),

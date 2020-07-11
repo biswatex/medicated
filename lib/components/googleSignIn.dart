@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -7,23 +8,53 @@ class GoogleSignIn extends StatelessWidget {
   GoogleSignIn({this.google,this.facebook});
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
     return Container(
       child: Column(
         children: [
           Container(
-              margin: EdgeInsets.only(bottom:50,top: 50),
-              child: Text('or',style: TextStyle(color:Colors.white,fontSize:18,fontWeight:FontWeight.bold))),
-          Container(
-            margin: EdgeInsets.only(bottom:10),
-              child: Text('continue with',style: TextStyle(color:Colors.white))),
+            child: Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Divider(
+                        indent: 10,
+                        endIndent: 10,
+                        color: Colors.white,
+                        thickness: 1,
+                      )
+                  ),
+                  AutoSizeText('or',
+                        maxLines:1,
+                        style: TextStyle(color:Colors.white,fontWeight:FontWeight.normal)),
+                  Expanded(
+                      child: Divider(
+                        indent: 10,
+                        endIndent: 10,
+                        color: Colors.white,
+                        thickness: 1,
+                      )
+                  ),
+                ]
+            )
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+                padding: EdgeInsets.symmetric(vertical:10),
+                width: width*0.25,
+                child: AutoSizeText('Continue With',
+                    maxLines:1,
+                    style: TextStyle(color:Colors.white,fontWeight:FontWeight.normal))),
+          ),
           Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children:<Widget>[
               Container(
                 margin: EdgeInsets.all(5),
-              width: 55.0,
-              height: 55.0,
+              width:width*0.15,
+              height:width*0.15,
               alignment: Alignment.center,
               decoration: new BoxDecoration(
                 image: google,
@@ -31,8 +62,8 @@ class GoogleSignIn extends StatelessWidget {
             ),
             Container(
               margin: EdgeInsets.all(5),
-            width: 55.0,
-            height: 55.0,
+              width:width*0.15,
+              height:width*0.15,
             alignment: Alignment.center,
             decoration: new BoxDecoration(
             image: facebook,

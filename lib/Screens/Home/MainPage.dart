@@ -1,6 +1,8 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:getflutter/components/avatar/gf_avatar.dart';
 import 'package:medicated/Screens/Login/index.dart';
 import 'package:medicated/Screens/profile/PeofileScreen.dart';
 import 'package:medicated/components/CustomKFDrawer.dart';
@@ -51,7 +53,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       image = widget.image;
       image = "https://cdn3.iconfinder.com/data/icons/avatars-round-flat/33/avat-01-512.png";
     }else{
-      uide ="Default@medicative.com";
+      uide ="+91 1800000100";
       name = "User";
       image = "https://cdn3.iconfinder.com/data/icons/avatars-round-flat/33/avat-01-512.png";
     }
@@ -59,9 +61,17 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       initialPage: ClassBuilder.fromString('FragmentHome'),
       items: [
         KFDrawerItem.initWithPage(
-          text: Text(name, style: TextStyle(color: Colors.white)),
-          subtitle: Text(uide, style: TextStyle(color: Colors.white,fontSize:12),),
-          icon:CircleAvatar(
+          text: AutoSizeText(name,
+              maxLines: 1,
+              minFontSize: 12,
+              maxFontSize: 16,
+              style: TextStyle(color: Colors.white)),
+          subtitle: AutoSizeText(uide,
+            maxLines: 1,
+            minFontSize: 8,
+            maxFontSize: 12,
+            style: TextStyle(color: Colors.white),),
+          icon:GFAvatar(
             backgroundImage: NetworkImage(image)),
           page: ProfilePage(),
           header: true,

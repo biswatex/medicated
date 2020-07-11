@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 class GetDistance extends StatefulWidget {
-  final position;
-  const GetDistance({Key key, this.position}) : super(key: key);
+  final data;
+  const GetDistance({Key key, this.data}) : super(key: key);
   @override
   _GetDistanceState createState() => _GetDistanceState();
 }
@@ -13,16 +13,17 @@ class GetDistance extends StatefulWidget {
 class _GetDistanceState extends State<GetDistance> {
   Position position;
   double distance;
-  Future Local;
+  Future f;
   double roundDouble(double value, int places){
     double mod = pow(10.0, places);
     return ((value * mod).round().toDouble() / mod);
   }
   initState(){
     super.initState();
-    Local = Distance(widget.position);
+    GeoPoint m = widget.data['geopoint'];
+    f = getDistance(m);
   }
-  Future<double> Distance(GeoPoint pos) async{
+  Future<double> getDistance(GeoPoint pos) async{
     position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     double distanceInMeters = await Geolocator().distanceBetween(pos.latitude,pos.longitude,position.latitude,position.longitude);
     setState(() {
@@ -33,8 +34,23 @@ class _GetDistanceState extends State<GetDistance> {
   }
   @override
   Widget build(BuildContext context) {
+
     return Container(
-      child: Text("  "+distance.toString()+" Km away",style: TextStyle(color:Colors.grey),),
+      child: FutureBuilder(
+        future: f,
+        builder:(_,context) {
+          if(context.connectionState == ConnectionState.waiting) {
+            return Container(
+              child: Text("calculating distance ..",
+                style: TextStyle(color: Colors.white),),
+            );
+        }else{
+            return Container(
+              child: Text("  " + distance.toString() + " Km away",
+                style: TextStyle(color: Colors.white),),
+            );
+          }
+        })
     );
   }
 }

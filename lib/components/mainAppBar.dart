@@ -46,7 +46,7 @@ class _MainAppBarState extends State<MainAppBar>
             clipper: ClipClass(_controllerr.value),
             child: Container(
               color: Colors.blue,
-              height: 300,
+              height: MediaQuery.of(context).size.width*0.8,
               child: Align(
                 alignment: Alignment.topLeft,
                 child: Container(
@@ -55,7 +55,7 @@ class _MainAppBarState extends State<MainAppBar>
                       Expanded(
                         flex:5,
                         child: Container(
-                          height: 200,
+                          height: MediaQuery.of(context).size.width*0.6,
                           child: ListView(
                             children: <Widget>[
                               Container(padding: EdgeInsets.only(left: 20,),

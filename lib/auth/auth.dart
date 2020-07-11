@@ -8,7 +8,7 @@ signIn(String email, String password,context) {
     FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password)
         .then((currentUser) => Firestore.instance.collection("user").document(currentUser.user.uid).get())
         .then((DocumentSnapshot result) => Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) => HomePage(title:result['name'],uid:result['email'],image:result['profilePics']))));
+                builder: (context) => HomePage(title:result['name'],uid:result['phoneNo'],image:result['profilePics']))));
   } catch (e){
    return AlertDialog(
         title: Text('error'),
@@ -36,7 +36,7 @@ signUp(email, password, displayName,surName,phoneNo,context) {
     "email": email,
     "phoneNo":phoneNo,
   })).then((result) => {Navigator.push(context, MaterialPageRoute(
-      builder: (context) => HomePage(title:displayName,uid:email,image:null,)))
+      builder: (context) => HomePage(title:displayName,uid:phoneNo,image:null,)))
   }
   );
 }

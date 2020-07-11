@@ -4,8 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medicated/Screens/Home/MainPage.dart';
 import 'package:medicated/Screens/Login/index.dart';
-
+import 'package:medicated/components/Customloder.dart';
 import 'Screens/Home/Utility.dart';
+
 void main() {
   ClassBuilder.registerClasses();
   runApp(MyApp());
@@ -42,7 +43,7 @@ class _SplashPageState extends State<Auth> with TickerProviderStateMixin {
         {
           Firestore.instance.collection('user').document(currentUser.uid).get().then((value) =>
               Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => HomePage(title:value['name'],uid:value['email'],image:value['profilePics'],)),
+            MaterialPageRoute(builder: (context) => HomePage(title:value['name'],uid:value['phoneNo'],image:value['profilePics'],)),
           )),
           }
     })
@@ -53,11 +54,23 @@ class _SplashPageState extends State<Auth> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          child: Text("Loading..."),
+      body: Container(
+          height: MediaQuery.of(context).size.height,
+          child: Center(
+              child: Stack(
+                children: [
+                  Align(
+                      alignment: Alignment.center,
+                      child: Text("medicative")),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom:100),
+                    child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: ColorLoader()),
+                  ),
+                ],
+              )),
         ),
-      ),
     );
   }
 }

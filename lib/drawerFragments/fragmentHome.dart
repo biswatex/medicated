@@ -1,6 +1,7 @@
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:medicated/HomeTabs/tab1.dart';
 import 'package:medicated/HomeTabs/tab4.dart';
 import 'package:medicated/components/CustomKFDrawer.dart';
@@ -33,6 +34,9 @@ class _MainClassState extends State<FragmentHome>
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     return Container(
         child : Scaffold(
           appBar: AppBar(

@@ -1,8 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:medicated/Screens/Home/QueryList.dart';
 import 'package:medicated/components/CategoryCard.dart';
 import 'package:medicated/components/DoctorType.dart';
 import 'package:medicated/components/PathologyCard.dart';
@@ -14,13 +17,13 @@ class TabHome extends StatefulWidget {
   _TabHomeState createState() => _TabHomeState();
 
 }
-
 class _TabHomeState extends State<TabHome>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
   @override
   void initState() {
     super.initState();
+    getLocation();
     _controller = AnimationController(
       value: 0.0,
       duration: Duration(seconds: 25),
@@ -29,32 +32,43 @@ class _TabHomeState extends State<TabHome>
       vsync: this,
     )..repeat();
   }
-
   @override
   void dispose() {
     _controller.dispose();
 
     super.dispose();
   }
+  double longitude;
+  double latitude;
+  getLocation() async{
+    Position p = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      longitude = p.longitude;
+      latitude = p.latitude;
+    });
+  }
   List items = [
     DoctorType(
+      queryType:"type",
       color_1: Colors.blue,
       color_2: Colors.pink,
       image: "https://www.rnz.co.nz/assets/news_crops/85269/eight_col_medicine.jpg?1565217199",
       title: "Allopathy",
-      subtitle: "Discription",),
+      subtitle: "Description",),
     DoctorType(
+      queryType:"type",
       color_1: Colors.green,
       color_2: Colors.blue,
       image: "https://t3.ftcdn.net/jpg/02/45/77/62/240_F_245776292_KjTmy7E9bYhpZxfikW1YLbZrG2EPoRay.jpg",
       title: "Ayurvedic",
-      subtitle: "Discription",),
+      subtitle: "Description",),
     DoctorType(
+      queryType:"type",
       color_1: Colors.pink,
       color_2: Colors.yellow,
       image: "https://img.freepik.com/free-photo/homeopathy-herbal-extracts-small-bottles_73944-9320.jpg?size=626&ext=jpg",
-      title: "Homeopathy ",
-      subtitle: "Discription",
+      title: "Homeopathy",
+      subtitle: "Description",
     ),
   ];
   @override
@@ -70,12 +84,14 @@ class _TabHomeState extends State<TabHome>
             Padding(
               padding: const EdgeInsets.all(0),
               child: GFListTile(
-                icon: Text("view all", style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontFamily: 'Museo',
-                  fontSize: 12,
-                  color: Colors.blueGrey,
-                ),),
+                icon: GestureDetector(
+                  child: Text("view all", style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontFamily: 'Museo',
+                    fontSize: 12,
+                    color: Colors.blueGrey,
+                  ),),
+                ),
                 avatar: Icon(Icons.category,color: Colors.grey,),
                 title: Text('Category', style: TextStyle(
                   fontWeight: FontWeight.normal,
@@ -86,7 +102,7 @@ class _TabHomeState extends State<TabHome>
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(vertical:8.0),
               child: Container(
                 height:MediaQuery.of(context).size.height*0.35,
                   child: CategoryCard()),
@@ -126,12 +142,18 @@ class _TabHomeState extends State<TabHome>
             Padding(
               padding: const EdgeInsets.all(0),
               child: GFListTile(
-                icon: Text("view all", style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontFamily: 'Museo',
-                  fontSize: 12,
-                  color: Colors.blueGrey,
-                ),),
+                icon: GestureDetector(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                        QueryList(longitude:longitude,latitude:latitude,q:Firestore.instance.collection("doctors"))));
+                  },
+                  child: Text("view all", style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontFamily: 'Museo',
+                    fontSize: 12,
+                    color: Colors.blueGrey,
+                  ),),
+                ),
                 avatar: Icon(Icons.location_on,color: Colors.grey,),
                 title: Text('Nearby Doctors', style: TextStyle(
                   fontWeight: FontWeight.normal,
@@ -141,17 +163,24 @@ class _TabHomeState extends State<TabHome>
                 ),),
               ),
             ),
-            Container(
-                child: DoctorsCard(),
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 20),
-              child: Text('Pathology', style: TextStyle(
-                fontWeight: FontWeight.normal,
-                fontFamily: 'Museo',
-                fontSize: 16,
-                color: Colors.black54,
-              ),),
+            DoctorsCard(demoCount:3),
+            Padding(
+              padding: const EdgeInsets.all(0),
+              child: GFListTile(
+                icon: Text("view all", style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontFamily: 'Museo',
+                  fontSize: 12,
+                  color: Colors.blueGrey,
+                ),),
+                avatar: Icon(Icons.edit_attributes,color: Colors.grey,),
+                title: Text('Pathology', style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontFamily: 'Museo',
+                  fontSize: 16,
+                  color: Colors.black54,
+                ),),
+              ),
             ),
             PathologyCard(),
             Container(
