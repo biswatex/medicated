@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -74,7 +75,9 @@ class _MainAppBarState extends State<MainAppBar>
                                     return snapshot.hasData
                                         ? Container(
                                         padding: EdgeInsets.only(left: 40,),
-                                        child: Text(snapshot.data.sentenceCase, style: TextStyle(
+                                        child: AutoSizeText(snapshot.data.sentenceCase,
+                                          maxLines: 1,
+                                          style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'Museo',
                                           fontSize: 32,
