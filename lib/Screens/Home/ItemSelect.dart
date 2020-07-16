@@ -39,9 +39,12 @@ class _DetailState extends State<Detail> {
       future: f,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Container(
-            color: Colors.white,
-            child: ColorLoader(),
+          return Scaffold(
+            appBar: AppBar(),
+            body: Container(
+              color: Colors.white,
+              child: ColorLoader(),
+            ),
           );
         } else {
           return Container(

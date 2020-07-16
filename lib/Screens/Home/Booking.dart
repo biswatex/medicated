@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:getflutter/getflutter.dart';
 import 'package:intl/intl.dart';
 import 'package:medicated/Screens/profile/MyAppointment.dart';
+import 'package:medicated/components/Customloder.dart';
 class Booking extends StatefulWidget {
   final snapshot;
   final docId;
@@ -17,18 +18,14 @@ class Booking extends StatefulWidget {
 
 class _BookingState extends State<Booking> {
   String month;
-  List m = new List();
   Future futureData;
   initState(){
     super.initState();
     futureData = getData();
   }
   getData() async {
-    DocumentSnapshot s = await Firestore.instance.collection('doctors').document(widget.docId).get();
-    setState(() {
-      m = s.data['Timings'];
-    });
-    return s;
+    QuerySnapshot s = await Firestore.instance.collection('doctors').document(widget.docId).collection('Appointments').getDocuments();
+    return s.documents;
   }
   void displayBottomSheet(BuildContext context,appoId,time,snapshot,confirmBooked,docId,docName) {
     showModalBottomSheet(
@@ -72,7 +69,7 @@ class _BookingState extends State<Booking> {
         ),
       ),
       body: Container(
-          child:(m != null)?Column(
+          child:Column(
             children: [
               Container(
                 padding: EdgeInsets.all(10),
@@ -82,41 +79,82 @@ class _BookingState extends State<Booking> {
                 padding: EdgeInsets.symmetric(horizontal: 10),
                     height: 300,
                     child:
-                    ListView.builder(
-                          itemCount: m.length,
-                            itemBuilder: (_,i) {
-                              if(m[i]['maxBooking'] > m[i]['ConfirmBooked']){
-                                return GestureDetector(
-                                  onTap: (){
-                                    displayBottomSheet(
-                                      context,
-                                      m[i]['uid'],
-                                      DateFormat.MMMd().add_jm().format(m[i]['EndTime'].toDate()),
-                                      widget.snapshot,
-                                      m[i]['ConfirmBooked'],
-                                      widget.docId,
-                                      widget.docName,
-                                    );
-                                  },
-                                  child: Card(
-                                    child: ListTile(
-                                      title: Text(DateFormat.MMMd().add_jm().format(m[i]['StartTime'].toDate()).toString()+" - "+DateFormat().add_jm().format(m[i]['EndTime'].toDate()).toString()),
-                                      subtitle: Text((m[i]['maxBooking']-m[i]['ConfirmBooked']).toString()+" Sit's Available"),
-                                      trailing: GestureDetector(
-                                        onTap: () {  },
-                                        child: Text("book",style: TextStyle(color:Colors.teal),),
-                                      ),
-                                    ),
-                                  ),
+                    FutureBuilder(
+                      future: getData(),
+                      builder: (context, snapshot) {
+                         if(snapshot.connectionState != ConnectionState.waiting){
+                            return ListView.builder(
+                                  itemCount:snapshot.data.length,
+                                    itemBuilder: (_,i) {
+                                        if (snapshot.data[i]
+                                            .data['maxBooking'] >
+                                            snapshot.data[i]
+                                                .data['ConfirmBooked']) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              displayBottomSheet(
+                                                context,
+                                                snapshot.data[i].data['uid'],
+                                                DateFormat.MMMd()
+                                                    .add_jm()
+                                                    .format(snapshot.data[i]
+                                                    .data['EndTime'].toDate()),
+                                                widget.snapshot,
+                                                snapshot.data[i]
+                                                    .data['ConfirmBooked'],
+                                                widget.docId,
+                                                widget.docName,
+                                              );
+                                            },
+                                            child: Card(
+                                              child: ListTile(
+                                                title: Text(
+                                                    DateFormat.MMMd().add_jm()
+                                                        .format(snapshot.data[i]
+                                                        .data['StartTime']
+                                                        .toDate())
+                                                        .toString() + " - " +
+                                                        DateFormat().add_jm()
+                                                            .format(
+                                                            snapshot.data[i]
+                                                                .data['EndTime']
+                                                                .toDate())
+                                                            .toString()),
+                                                subtitle: Text((snapshot.data[i]
+                                                    .data['maxBooking'] -
+                                                    snapshot.data[i]
+                                                        .data['ConfirmBooked'])
+                                                    .toString() +
+                                                    " Sit's Available"),
+                                                trailing: GestureDetector(
+                                                  onTap: () {},
+                                                  child: Text("book",
+                                                    style: TextStyle(
+                                                        color: Colors.teal),),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          return Container(
+                                              alignment: Alignment.center,
+                                              child: Image(image: AssetImage(
+                                                  'assets/images/notFound.png'))
+                                          );
+                                        }
+                                      }
                                 );
-                              }else{
-                                return null;
-                              }
-                            }
-                        )
+                          }else{
+                           return Container(
+                             alignment: Alignment.center,
+                             child:ColorLoader()
+                           );
+                         }
+                      }
+                    )
                     ),
             ],
-          ):Container(alignment: Alignment.center,child: Text("Doctor Not Added any Appointments yet"),)
+          ),
     ),
     );
   }
@@ -244,23 +282,75 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
     ).then((value) =>
         Firestore.instance.collection("doctors")
             .document(docId)
-            .collection(appoUid)
-            .document(value.documentID)
+            .collection("Bookings")
+            .document()
             .setData(
             {
               'time': time,
-              'AppointmentUid': appoUid,
+              'uid': appoUid,
               'User': userId,
               'tokenNo':tokenNo,
               'fees': 300,
             }
         )).then((value) =>
-    {
-      showAlertDialog(context)
-    }
+        Firestore.instance.collection('doctors')
+            .document(docId)
+            .collection('Appointments')
+            .document(appoUid).get().then((value) =>
+            {
+              if(value.data['maxBooking']>value.data['ConfirmBooked']){
+                Firestore.instance.collection('doctors')
+                    .document(docId)
+                    .collection('Appointments')
+                    .document(appoUid).
+                updateData({'ConfirmBooked':value.data['ConfirmBooked']+1,})
+                    .then((value) => {showAlertDialog(context)})
+              }else{
+                    showErrorAlertDialog(context)
+              }
+            }
+        )
     );
   }
-
+  showErrorAlertDialog(BuildContext context) {
+    AlertDialog alert = AlertDialog(
+      content: Container(
+        height: 200,
+        child: Column(
+          children: [
+            Image(image: AssetImage('assets/images/error.gif')),
+            AutoSizeText(
+              "Booking Canceled",
+              style:TextStyle(fontFamily: 'Museo',color: Colors.red,fontWeight:FontWeight.bold),
+              maxLines: 1,
+            ),
+            Text(
+              "No sits available",
+              style:TextStyle(fontSize: 10,fontFamily: 'Museo',color: Colors.grey,fontWeight:FontWeight.normal),
+              maxLines: 1,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        FlatButton(
+          child: Text("Close"),
+          onPressed: () {
+            setState(() {
+              accepted = false;
+            });
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
   showAlertDialog(BuildContext context) {
     AlertDialog alert = AlertDialog(
       content: Container(

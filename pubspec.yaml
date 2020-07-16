@@ -79,6 +79,8 @@ flutter:
      - assets/images/userDefault.png
      - assets/images/add.png
      - assets/images/confirmation.gif
+     - assets/images/error.gif
+     - assets/images/notFound.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
