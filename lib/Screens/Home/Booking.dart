@@ -27,7 +27,7 @@ class _BookingState extends State<Booking> {
     QuerySnapshot s = await Firestore.instance.collection('doctors').document(widget.docId).collection('Appointments').getDocuments();
     return s.documents;
   }
-  void displayBottomSheet(BuildContext context,appoId,time,snapshot,confirmBooked,docId,docName) {
+  void displayBottomSheet(BuildContext context,appoId,time,snapshot,confirmBooked,docId,docName,fees) {
     showModalBottomSheet(
         isScrollControlled: true,
         shape: RoundedRectangleBorder(
@@ -37,7 +37,7 @@ class _BookingState extends State<Booking> {
         builder: (context) {
           return Container(
             height: MediaQuery.of(context).size.height*0.7,
-              child: ConfirmBooking(appoId: appoId,time: time,snapshot: snapshot,conf: confirmBooked,docId:docId, docName: docName,));
+              child: ConfirmBooking(appoId: appoId,time: time,snapshot: snapshot,conf: confirmBooked,docId:docId, docName: docName,fees:fees,));
         });
   }
   @override
@@ -82,72 +82,81 @@ class _BookingState extends State<Booking> {
                     FutureBuilder(
                       future: getData(),
                       builder: (context, snapshot) {
-                         if(snapshot.connectionState != ConnectionState.waiting){
-                            return ListView.builder(
-                                  itemCount:snapshot.data.length,
-                                    itemBuilder: (_,i) {
-                                        if (snapshot.data[i]
-                                            .data['maxBooking'] >
-                                            snapshot.data[i]
-                                                .data['ConfirmBooked']) {
-                                          return GestureDetector(
-                                            onTap: () {
-                                              displayBottomSheet(
-                                                context,
-                                                snapshot.data[i].data['uid'],
-                                                DateFormat.MMMd()
-                                                    .add_jm()
-                                                    .format(snapshot.data[i]
-                                                    .data['EndTime'].toDate()),
-                                                widget.snapshot,
-                                                snapshot.data[i]
-                                                    .data['ConfirmBooked'],
-                                                widget.docId,
-                                                widget.docName,
-                                              );
-                                            },
-                                            child: Card(
-                                              child: ListTile(
-                                                title: Text(
-                                                    DateFormat.MMMd().add_jm()
-                                                        .format(snapshot.data[i]
-                                                        .data['StartTime']
-                                                        .toDate())
-                                                        .toString() + " - " +
-                                                        DateFormat().add_jm()
-                                                            .format(
-                                                            snapshot.data[i]
-                                                                .data['EndTime']
-                                                                .toDate())
-                                                            .toString()),
-                                                subtitle: Text((snapshot.data[i]
-                                                    .data['maxBooking'] -
-                                                    snapshot.data[i]
-                                                        .data['ConfirmBooked'])
-                                                    .toString() +
-                                                    " Sit's Available"),
-                                                trailing: GestureDetector(
-                                                  onTap: () {},
-                                                  child: Text("book",
-                                                    style: TextStyle(
-                                                        color: Colors.teal),),
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        } else {
-                                          return Container(
-                                              alignment: Alignment.center,
-                                              child: Image(image: AssetImage(
-                                                  'assets/images/notFound.png'))
-                                          );
-                                        }
-                                      }
-                                );
-                          }else{
+                         if(snapshot.hasError || !snapshot.hasError) {
+                           if (snapshot.connectionState != ConnectionState.waiting) {
+                             return ListView.builder(
+                                 itemCount: snapshot.data.length,
+                                 itemBuilder: (_, i) {
+                                   if (snapshot.data[i]
+                                       .data['maxBooking'] >
+                                       snapshot.data[i]
+                                           .data['ConfirmBooked']) {
+                                     return GestureDetector(
+                                       onTap: () {
+                                         displayBottomSheet(
+                                             context,
+                                             snapshot.data[i].data['uid'],
+                                             DateFormat.MMMd()
+                                                 .add_jm()
+                                                 .format(snapshot.data[i]
+                                                 .data['EndTime'].toDate()),
+                                             widget.snapshot,
+                                             snapshot.data[i]
+                                                 .data['ConfirmBooked'],
+                                             widget.docId,
+                                             widget.docName,
+                                             snapshot.data[i].data['fees']
+                                         );
+                                       },
+                                       child: Card(
+                                         child: ListTile(
+                                           title: Text(
+                                               DateFormat.MMMd().add_jm()
+                                                   .format(snapshot.data[i]
+                                                   .data['StartTime']
+                                                   .toDate())
+                                                   .toString() + " - " +
+                                                   DateFormat().add_jm()
+                                                       .format(
+                                                       snapshot.data[i]
+                                                           .data['EndTime']
+                                                           .toDate())
+                                                       .toString()),
+                                           subtitle: Text((snapshot.data[i]
+                                               .data['maxBooking'] -
+                                               snapshot.data[i]
+                                                   .data['ConfirmBooked'])
+                                               .toString() +
+                                               " Sit's Available"),
+                                           trailing: GestureDetector(
+                                             onTap: () {},
+                                             child: Text("book",
+                                               style: TextStyle(
+                                                   color: Colors.teal),),
+                                           ),
+                                         ),
+                                       ),
+                                     );
+                                   } else {
+                                     return Container(
+                                         alignment: Alignment.center,
+                                         child: Image(image: AssetImage(
+                                             'assets/images/notFound.png'))
+                                     );
+                                   }
+                                 }
+                             );
+                           } else {
+                             return Container(
+                                 alignment: Alignment.center,
+                                 child: ColorLoader()
+                             );
+                           }
+                         }else {
                            return Container(
-                             alignment: Alignment.center,
-                             child:ColorLoader()
+                               alignment: Alignment.center,
+                               child: Image(image: AssetImage(
+                                   'assets/images/notFound.png'))
                            );
                          }
                       }
@@ -166,7 +175,8 @@ class ConfirmBooking extends StatefulWidget {
   final conf;
   final docId;
   final docName;
-  const ConfirmBooking({Key key, this.appoId, this.time, this.snapshot, this.conf, this.docId, this.docName}) : super(key: key);
+  final fees;
+  const ConfirmBooking({Key key, this.appoId, this.time, this.snapshot, this.conf, this.docId, this.docName,this.fees}) : super(key: key);
   @override
   _ConfirmBookingState createState() => _ConfirmBookingState();
 }
@@ -219,7 +229,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
           GFListTile(
             title: Text("Doctor Name : " + widget.snapshot.data['name']),
             subtitleText: widget.snapshot.data['Department'],
-            description: Text("Fees : 300"),
+            description: Text("Fees : "+widget.fees.toString()),
           ),
           Container(
             padding: EdgeInsets.only(left: 20),
@@ -252,7 +262,8 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                       widget.docId,
                       widget.conf + 1,
                       widget.docName,
-                      user) : null,
+                      user,
+                      widget.fees) : null,
               child: Text("Confirm Booking", style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Museo',
@@ -265,32 +276,35 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
   }
 
   bookingFunction(context, appoUid, time, docId, tokenNo, docName,
-      userId) async {
+      userId,fees) async {
+    String id = DateTime.now().millisecondsSinceEpoch.toString()+userId;
     await Firestore.instance.collection('user')
         .document(userId)
         .collection('appointments')
-        .add(
+        .document(id)
+        .setData(
         {
               'uid': appoUid,
               'time': time,
               'doctorID': docId,
               'doctorName': docName,
               'tokenNo': tokenNo,
-              'fees': 300,
-
+              'fees': fees,
+              'documentId':id
         }
     ).then((value) =>
         Firestore.instance.collection("doctors")
             .document(docId)
             .collection("Bookings")
-            .document()
+            .document(id)
             .setData(
             {
+              'documentId':id,
               'time': time,
               'uid': appoUid,
               'User': userId,
               'tokenNo':tokenNo,
-              'fees': 300,
+              'fees': fees,
             }
         )).then((value) =>
         Firestore.instance.collection('doctors')

@@ -7,6 +7,8 @@ class DetailPageFragment extends StatefulWidget {
 class _DetailPageFragmentState extends State<DetailPageFragment> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+
+    );
   }
 }

@@ -64,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
           elevation: 0,
           leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios,color: Colors.white,),
+              icon: Icon(Icons.menu,color: Colors.white,),
               onPressed: widget.onMenuPressed),
         ),
         body: Container(

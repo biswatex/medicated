@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medicated/HomeTabs/tab1.dart';
 import 'package:medicated/HomeTabs/tab4.dart';
+import 'package:medicated/NotificationHelper.dart';
 import 'package:medicated/components/CustomKFDrawer.dart';
 
 // ignore: must_be_immutable
@@ -75,6 +76,7 @@ class _MainClassState extends State<FragmentHome>
                 Stack(
                   children: <Widget>[
                     new IconButton(icon: Icon(Icons.notifications), onPressed: () {
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePagee()));
                       setState(() {
                         counter = 0;
                       });

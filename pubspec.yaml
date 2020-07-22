@@ -41,10 +41,7 @@ dependencies:
   auto_size_text: ^2.1.0
   carousel_slider: ^2.2.1
   geoflutterfire: ^2.1.0
-
-
-
-
+  flutter_local_notifications: ^1.4.4+2
 
 
 
@@ -80,6 +77,7 @@ flutter:
      - assets/images/confirmation.gif
      - assets/images/error.gif
      - assets/images/notFound.png
+     - assets/images/delete.gif
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
