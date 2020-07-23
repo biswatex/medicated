@@ -27,7 +27,7 @@ class _BookingState extends State<Booking> {
     QuerySnapshot s = await Firestore.instance.collection('doctors').document(widget.docId).collection('Appointments').getDocuments();
     return s.documents;
   }
-  void displayBottomSheet(BuildContext context,appoId,time,snapshot,confirmBooked,docId,docName,fees) {
+  void displayBottomSheet(BuildContext context,appoId,startTime,endTime,snapshot,confirmBooked,docId,docName,fees) {
     showModalBottomSheet(
         isScrollControlled: true,
         shape: RoundedRectangleBorder(
@@ -37,7 +37,7 @@ class _BookingState extends State<Booking> {
         builder: (context) {
           return Container(
             height: MediaQuery.of(context).size.height*0.7,
-              child: ConfirmBooking(appoId: appoId,time: time,snapshot: snapshot,conf: confirmBooked,docId:docId, docName: docName,fees:fees,));
+              child: ConfirmBooking(appoId: appoId,startTime:startTime,endTime:endTime,snapshot: snapshot,conf: confirmBooked,docId:docId, docName: docName,fees:fees,));
         });
   }
   @override
@@ -96,13 +96,10 @@ class _BookingState extends State<Booking> {
                                          displayBottomSheet(
                                              context,
                                              snapshot.data[i].data['uid'],
-                                             DateFormat.MMMd()
-                                                 .add_jm()
-                                                 .format(snapshot.data[i]
-                                                 .data['EndTime'].toDate()),
+                                             snapshot.data[i].data['StartTime'],
+                                             snapshot.data[i].data['EndTime'],
                                              widget.snapshot,
-                                             snapshot.data[i]
-                                                 .data['ConfirmBooked'],
+                                             snapshot.data[i].data['ConfirmBooked'],
                                              widget.docId,
                                              widget.docName,
                                              snapshot.data[i].data['fees']
@@ -170,13 +167,15 @@ class _BookingState extends State<Booking> {
 }
 class ConfirmBooking extends StatefulWidget {
   final appoId;
-  final time;
+  final startTime;
+  final endTime;
   final snapshot;
   final conf;
   final docId;
   final docName;
   final fees;
-  const ConfirmBooking({Key key, this.appoId, this.time, this.snapshot, this.conf, this.docId, this.docName,this.fees}) : super(key: key);
+
+  const ConfirmBooking({Key key, this.appoId, this.snapshot, this.conf, this.docId, this.docName,this.fees, this.startTime, this.endTime}) : super(key: key);
   @override
   _ConfirmBookingState createState() => _ConfirmBookingState();
 }
@@ -223,7 +222,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                   fontWeight: FontWeight.bold, fontFamily: 'Museo'),)),
           GFListTile(
             title: Text("Appointment Id " + widget.appoId.toString()),
-            subtitleText: "Be there within " + widget.time.toString(),
+            subtitleText: "Be there within " + widget.startTime.toString(),
             description: Text("Token no : " + (widget.conf + 1).toString()),
           ),
           GFListTile(
@@ -258,7 +257,8 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                   bookingFunction(
                       context,
                       widget.appoId,
-                      widget.time,
+                      widget.startTime,
+                      widget.endTime,
                       widget.docId,
                       widget.conf + 1,
                       widget.docName,
@@ -275,7 +275,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
     );
   }
 
-  bookingFunction(context, appoUid, time, docId, tokenNo, docName,
+  bookingFunction(context, appoUid, startTime,endTime, docId, tokenNo, docName,
       userId,fees) async {
     String id = DateTime.now().millisecondsSinceEpoch.toString()+userId;
     await Firestore.instance.collection('user')
@@ -285,7 +285,8 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
         .setData(
         {
               'uid': appoUid,
-              'time': time,
+              'StartTime': startTime,
+              'EndTime':endTime,
               'doctorID': docId,
               'doctorName': docName,
               'tokenNo': tokenNo,
@@ -300,7 +301,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
             .setData(
             {
               'documentId':id,
-              'time': time,
+              'time': startTime,
               'uid': appoUid,
               'User': userId,
               'tokenNo':tokenNo,
@@ -369,6 +370,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
     AlertDialog alert = AlertDialog(
       content: Container(
         height: 180,
+        width:100,
         child: Column(
           children: [
             Image(image: AssetImage('assets/images/confirmation.gif')),

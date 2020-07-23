@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getflutter/components/avatar/gf_avatar.dart';
 import 'package:medicated/Screens/Login/index.dart';
+import 'package:medicated/Screens/profile/MyAppointment.dart';
 import 'package:medicated/Screens/profile/PeofileScreen.dart';
 import 'package:medicated/components/CustomKFDrawer.dart';
 import 'package:medicated/drawerFragments/FragmentAbout.dart';
@@ -81,6 +82,15 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
           icon: Icon(Icons.home, color: Colors.white),
           page: FragmentHome(),
           header: false,
+        ),
+        KFDrawerItem.initWithPage(
+          text: Text('Appointments', style: TextStyle(color: Colors.white)),
+          icon: Icon(Icons.calendar_today, color: Colors.white),
+          page: MyAppointment(),
+          header: false,
+        ),
+        KFDrawerItem.initWithPage(
+          divider: true,
         ),
         KFDrawerItem.initWithPage(
           text: Text(

@@ -360,8 +360,9 @@ class __KFDrawerState extends State<_KFDrawer> {
 class KFDrawerItem extends StatelessWidget {
   KFDrawerItem({this.onPressed, this.text, this.icon});
 
-  KFDrawerItem.initWithPage({this.onPressed, this.text, this.icon, this.alias, this.page,this.header,this.subtitle});
+  KFDrawerItem.initWithPage({this.onPressed, this.text, this.icon, this.alias, this.page,this.header,this.subtitle,this.divider});
 
+  bool divider;
   Function onPressed;
   Widget text;
   Widget icon;
@@ -372,7 +373,7 @@ class KFDrawerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if(header==true){
+    if (header == true) {
       return Container(
         alignment: Alignment.topLeft,
         padding: EdgeInsets.symmetric(vertical: 2.0),
@@ -382,6 +383,19 @@ class KFDrawerItem extends StatelessWidget {
           title: text,
           subtitle: subtitle,
           onTap: onPressed,
+        ),
+      );
+    }
+    else if(divider == true){
+      return Container(
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Divider(
+            endIndent: MediaQuery.of(context).size.width*0.6,
+            indent:10,
+            thickness: 2,
+            color: Colors.white,
+          ),
         ),
       );
     }else{

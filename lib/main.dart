@@ -12,8 +12,7 @@ import 'Screens/Home/Utility.dart';
 Future<void> main() async{
   ClassBuilder.registerClasses();
   WidgetsFlutterBinding.ensureInitialized();
-
-  notificationAppLaunchDetails =
+ notificationAppLaunchDetails =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
   var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
   var initializationSettingsIOS = IOSInitializationSettings(

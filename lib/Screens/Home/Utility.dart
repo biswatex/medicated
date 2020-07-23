@@ -1,3 +1,4 @@
+import 'package:medicated/Screens/profile/MyAppointment.dart';
 import 'package:medicated/Screens/profile/PeofileScreen.dart';
 import 'package:medicated/drawerFragments/FragmentAbout.dart';
 import 'package:medicated/drawerFragments/FragmentContactUs.dart';
@@ -21,6 +22,7 @@ class ClassBuilder {
     register<ProfilePage>(() => ProfilePage());
     register<FeedbackUs>(() => FeedbackUs());
     register<ContactUs>(() => ContactUs());
+    register<MyAppointment>(() => MyAppointment());
   }
 
   static dynamic fromString(String type) {
