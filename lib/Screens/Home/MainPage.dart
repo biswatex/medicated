@@ -86,7 +86,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         KFDrawerItem.initWithPage(
           text: Text('Appointments', style: TextStyle(color: Colors.white)),
           icon: Icon(Icons.calendar_today, color: Colors.white),
-          page: MyAppointment(),
+          page: MyAppointment(fromDrawer:true),
           header: false,
         ),
         KFDrawerItem.initWithPage(

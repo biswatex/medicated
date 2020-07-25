@@ -1,10 +1,13 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:medicated/HomeTabs/tab1.dart';
 import 'package:medicated/HomeTabs/tab4.dart';
 import 'package:medicated/NotificationHelper.dart';
+import 'package:medicated/Screens/Home/Notifications.dart';
 import 'package:medicated/components/CustomKFDrawer.dart';
 
 // ignore: must_be_immutable
@@ -33,26 +36,32 @@ class _MainClassState extends State<FragmentHome>
     });
   }
   Future<bool> _onBackPressed() {
-    return showDialog(
-      context: context,
-      builder: (context) => new AlertDialog(
-        title: new Text('Are you sure?'),
-        content: new Text('Do you want to exit an App'),
-        actions: <Widget>[
-          new FlatButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text("NO"),
-          ),
-          SizedBox(height: 16),
-          new FlatButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text("YES"),
-          ),
-        ],
-      ),
-    ) ??
-        false;
+    if(_scaffoldKey.currentState.isEndDrawerOpen){
+      Navigator.of(context).pop();
+    }else {
+      return showDialog(
+        context: context,
+        builder: (context) =>
+        new AlertDialog(
+          title: new Text('Are you sure?'),
+          content: new Text('Do you want to exit an App'),
+          actions: <Widget>[
+            new FlatButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text("NO"),
+            ),
+            SizedBox(height: 16),
+            new FlatButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text("YES"),
+            ),
+          ],
+        ),
+      ) ??
+          false;
+    }
   }
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -62,8 +71,28 @@ class _MainClassState extends State<FragmentHome>
         child : WillPopScope(
           onWillPop: _onBackPressed,
           child: Scaffold(
+            key: _scaffoldKey,
+            endDrawer:SafeArea(
+              child: Drawer(
+                  child: Container(
+                    height:MediaQuery.of(context).size.height*0.9,
+                    child: ListView(
+                        children: <Widget>[
+                          ListTile(
+                            leading: Icon(Icons.notifications),
+                            title:Text("Notifications",maxLines:1,style: TextStyle(fontFamily: 'Museo',color: Colors.grey,fontSize: 22),),
+                          ),
+                          Container(
+                              height:MediaQuery.of(context).size.height*0.85,
+                              child: Notifications()),
+                        ]
+                    ),
+                  )
+              ),
+            ),
             appBar: AppBar(
-              elevation: 0,
+              backgroundColor: Colors.blue,
+              elevation:0,
               leading: Builder(
                 builder: (BuildContext context) {
                   return IconButton(
@@ -75,12 +104,9 @@ class _MainClassState extends State<FragmentHome>
               actions: <Widget>[
                 Stack(
                   children: <Widget>[
-                    new IconButton(icon: Icon(Icons.notifications), onPressed: () {
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePagee()));
-                      setState(() {
-                        counter = 0;
-                      });
-                    }),
+                    new IconButton(icon: Icon(Icons.notifications),
+                      onPressed:(){_scaffoldKey.currentState.openEndDrawer();},
+                    ),
                     Positioned(
                       right: 10,
                       top: 10,

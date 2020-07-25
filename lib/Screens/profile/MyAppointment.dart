@@ -11,6 +11,8 @@ import 'package:medicated/components/CustomKFDrawer.dart';
 import 'package:medicated/components/Customloder.dart';
 
 class MyAppointment extends KFDrawerContent {
+  final bool fromDrawer;
+  MyAppointment({this.fromDrawer});
   @override
   _MyAppointmentState createState() => _MyAppointmentState();
 }
@@ -24,27 +26,31 @@ class _MyAppointmentState extends State<MyAppointment> {
     return q.documents;
   }
   Future<bool> _onBackPressed() {
-    return showDialog(
-      context: context,
-      builder: (context) => new AlertDialog(
-        title: new Text('Are you sure?'),
-        content: new Text('Do you want to exit an App'),
-        actions: <Widget>[
-          new FlatButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text("NO"),
-          ),
-          SizedBox(height: 16),
-          new FlatButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text("YES"),
-          ),
-        ],
-      ),
-    ) ??
-        false;
+    if (widget.fromDrawer == true) {
+      return showDialog(
+        context: context,
+        builder: (context) =>
+        new AlertDialog(
+          title: new Text('Are you sure?'),
+          content: new Text('Do you want to exit an App'),
+          actions: <Widget>[
+            new FlatButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text("NO"),
+            ),
+            SizedBox(height: 16),
+            new FlatButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text("YES"),
+            ),
+          ],
+        ),
+      ) ??
+          false;
+    }else{
+      Navigator.pop(context);
+    }
   }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -53,10 +59,15 @@ class _MyAppointmentState extends State<MyAppointment> {
         appBar: AppBar(
           leading: Builder(
             builder: (BuildContext context) {
-              return IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: widget.onMenuPressed,
-              );
+              if (widget.fromDrawer == true) {
+                return IconButton(
+                  icon: Icon(Icons.menu),
+                  onPressed: widget.onMenuPressed,);
+              }else{
+                return IconButton(
+                  icon: Icon(Icons.arrow_back_ios),
+                  onPressed:(){Navigator.pop(context);},);
+              }
             },
           ),
         ),

@@ -128,8 +128,10 @@ class _HomePageState extends State<HomePagee> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child:Text("notification Helper in development ")
+    return Scaffold(
+      body: Container(
+        child:Text("notification Helper in development ")
+      ),
     );
   }
 }

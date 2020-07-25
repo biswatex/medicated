@@ -130,7 +130,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ListTile(
                 onTap: (){
                   Navigator.push(context, MaterialPageRoute(
-                      builder:(BuildContext context) => MyAppointment()));
+                      builder:(BuildContext context) => MyAppointment(fromDrawer:false)));
                 },
                 title: Text('My Appointments'),
                 leading: Icon(Icons.calendar_today),

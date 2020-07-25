@@ -45,8 +45,7 @@ dependencies:
   geoflutterfire: ^2.1.0
   flutter_local_notifications: ^1.4.4+2
   add_2_calendar: ^1.4.0
-
-
+  firebase_messaging: ^5.1.4
 
 
 

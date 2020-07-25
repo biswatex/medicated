@@ -399,7 +399,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
               accepted = false;
             });
             Navigator.push(context, MaterialPageRoute(
-                builder:(BuildContext context) => MyAppointment()));
+                builder:(BuildContext context) => MyAppointment(fromDrawer:false)));
           },
         )
       ],
