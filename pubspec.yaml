@@ -46,6 +46,7 @@ dependencies:
   flutter_local_notifications: ^1.4.4+2
   add_2_calendar: ^1.4.0
   firebase_messaging: ^5.1.4
+  datetime_picker_formfield: ^1.0.0
 
 
 
@@ -69,6 +70,7 @@ flutter:
      - assets/images/
      - assets/
      - assets/images/bg.png
+     - assets/images/appbg.jpg
      - assets/images/google.png
      - assets/images/facebook.png
      - assets/images/M.png

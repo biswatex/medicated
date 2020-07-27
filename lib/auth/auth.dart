@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:medicated/Screens/Home/MainPage.dart';
+import 'package:medicated/Screens/Login/CompleteRegister.dart';
 
 signIn(String email, String password,context) {
   try {
@@ -24,19 +26,10 @@ signIn(String email, String password,context) {
   }
 }
 
-signUp(email, password, displayName,surName,phoneNo,context) {
+signUp(email, password,context) {
   FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password,)
-      .then((currentUser) => Firestore.instance
-      .collection("user")
-      .document(currentUser.user.uid)
-      .setData({
-    "uid": currentUser.user.uid,
-    "name": displayName,
-    "surname": surName,
-    "email": email,
-    "phoneNo":phoneNo,
-  })).then((result) => {Navigator.push(context, MaterialPageRoute(
-      builder: (context) => HomePage(title:displayName,uid:phoneNo,image:null,)))
-  }
-  );
+      .then((currentUser) =>{Navigator.push(context, MaterialPageRoute(
+        builder: (context) => CompleteRegistration()))}
+      );
 }
+
