@@ -1,9 +1,14 @@
 import 'dart:async';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_login_register/firebase_login_register.dart';
 import 'package:flutter/material.dart';
+import 'package:medicated/Screens/Home/MainPage.dart';
 import 'package:medicated/auth/auth.dart';
 import 'package:medicated/components/Customloder.dart';
 import 'package:medicated/components/googleSignIn.dart';
+import 'CompleteRegister.dart';
+import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -13,6 +18,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen>
     with TickerProviderStateMixin {
   String email,password,displayName,surName,phoneNo,confPassword;
+  final formKeyPhone = new GlobalKey<FormState>();
+  String verificationId, smsCode;
+  bool codeSent = false;
   int _state = 0;
   final formKeyReg = GlobalKey<FormState>();
   final formKey = GlobalKey<FormState>();
@@ -20,11 +28,11 @@ class _LoginScreenState extends State<LoginScreen>
   void initState() {
     super.initState();
   }
-  Widget HomePage() {
+  Widget Home() {
     var height = MediaQuery.of(context).size.height;
     return Container(
       height: height,
-      child: new Column(
+      child: ListView(
         children: <Widget>[
           Container(
             padding: EdgeInsets.only(top:height*0.2),
@@ -51,43 +59,102 @@ class _LoginScreenState extends State<LoginScreen>
               ],
             ),
           ),
-          new Container(
-            width: MediaQuery.of(context).size.width,
-            margin: const EdgeInsets.only(left: 30.0, right: 30.0, top: 100),
-            alignment: Alignment.center,
-            child: new Row(
-              children: <Widget>[
-                new Expanded(
-                  child: new FlatButton(
-                    shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(30.0)),
-                    color: Colors.redAccent,
-                    onPressed: () => gotoSignup(),
-                    child: new Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 20.0,
-                        horizontal: 20.0,
-                      ),
-                      child: new Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          new Expanded(
-                            child: Text(
-                              "SIGN UP",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+          Padding(
+            padding: EdgeInsets.only(left: 30.0, right: 30.0, top:50.0,bottom:10),
+            child: TextFormField(
+              obscureText: false,
+              decoration: new InputDecoration(
+                prefixIcon: new Icon(Icons.phone,color:Colors.white),
+                labelText: 'Phone Number',
+                labelStyle: TextStyle(color: Colors.white),
+                fillColor: Colors.white12,
+                filled: true,
+                border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(
+                      color: Colors.white,
+                    )),
+                focusedBorder: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(
+                      color: Colors.white,
+                    )),
+                enabledBorder: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(
+                      color: Colors.white,
+                    )),
+              ),
+              validator: (val) {
+                if(val.length!=10) {
+                  return "phone cannot be empty";
+                }else{
+                  return null;
+                }
+              },
+              onChanged: (value) {
+                setState(() {
+                  this.phoneNo = value;
+                });//get the value entered by user.
+              },
+              keyboardType: TextInputType.phone,
+              style: new TextStyle(
+                height: 1,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Museo",
+                color: Colors.white,
+              ),
             ),
           ),
+          codeSent ?Padding(
+            padding: EdgeInsets.only(left: 30.0, right: 30.0, top:10.0,bottom:10),
+            child: TextFormField(
+              obscureText: false,
+              decoration: new InputDecoration(
+                prefixIcon: new Icon(Icons.lock,color:Colors.white),
+                labelText: 'OTP',
+                labelStyle: TextStyle(color: Colors.white),
+                fillColor: Colors.white12,
+                filled: true,
+                border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(
+                      color: Colors.white,
+                    )),
+                focusedBorder: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(
+                      color: Colors.white,
+                    )),
+                enabledBorder: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(
+                      color: Colors.white,
+                    )),
+              ),
+              validator: (val) {
+                if(val.length==null) {
+                  return "OTP cannot be empty";
+                }else{
+                  return null;
+                }
+              },
+              onChanged: (value) {
+                setState(() {
+                  this.smsCode = value;
+                });//get the value entered by user.
+              },
+              keyboardType: TextInputType.number,
+              style: new TextStyle(
+                height: 1.0,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Museo",
+                color: Colors.white,
+              ),
+            ),
+          ):Container(),
           new Container(
             width: MediaQuery.of(context).size.width,
             margin: const EdgeInsets.only(left: 30.0, right: 30.0, top:10.0,bottom: 20),
@@ -99,7 +166,9 @@ class _LoginScreenState extends State<LoginScreen>
                     shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0)),
                     color: Colors.white,
-                    onPressed: () => gotoLogin(),
+                    onPressed: () {
+                      codeSent ? signInWithOTP(smsCode, verificationId):verifyPhone(phoneNo);
+                    },
                     child: new Container(
                       padding: const EdgeInsets.symmetric(
                         vertical: 20.0,
@@ -109,14 +178,17 @@ class _LoginScreenState extends State<LoginScreen>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           new Expanded(
-                            child: Text(
-                              "LOGIN",
+                            child: codeSent ? Text(
+                              "VERIFY",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   color: Colors.redAccent,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
+                                  fontWeight: FontWeight.bold),):Text(
+                              "SEND OTP",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold),)),
                         ],
                       ),
                     ),
@@ -128,12 +200,65 @@ class _LoginScreenState extends State<LoginScreen>
           GoogleSignIn(
             google: DecorationImage(image:AssetImage('assets/images/google.png')),
             facebook: DecorationImage(image:AssetImage('assets/images/facebook.png')),
+            onEmail:(){
+              gotoLogin();
+            },
           ),
         ],
       ),
     );
   }
+  signIn(AuthCredential authCreds) {
+    FirebaseAuth.instance.signInWithCredential(authCreds).then((value) =>
+    {
+      if(value.additionalUserInfo.isNewUser){
+        Navigator.pushReplacement(context, MaterialPageRoute(
+            builder: (context) => CompleteRegistration(isNumber:true,data:this.phoneNo,)))
+      }else{
+        Firestore.instance.collection("user").document(value.user.uid).get()
+            .then((DocumentSnapshot result) =>
+        (result["CompleteRegister"]==true)?
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(title:result['name'],uid:result['phoneNo'],image:result['profilePics']))):
+        Navigator.push(context, MaterialPageRoute(builder: (context) => CompleteRegistration(isNumber:true,data:this.phoneNo,)))
+        )
+      }
+    }
+    );
+  }
+  signInWithOTP(smsCode, verId) {
+    AuthCredential authCreds = PhoneAuthProvider.getCredential(
+        verificationId: verId, smsCode: smsCode);
+    signIn(authCreds);
+  }
+  Future<void> verifyPhone(phoneNo) async {
+    final PhoneVerificationCompleted verified = (AuthCredential authResult) {
+      signIn(authResult);
+    };
 
+    final PhoneVerificationFailed verificationfailed =
+        (AuthException authException) {
+      print('${authException.message}');
+    };
+
+    final PhoneCodeSent smsSent = (String verId, [int forceResend]) {
+      this.verificationId = verId;
+      setState(() {
+        this.codeSent = true;
+      });
+    };
+
+    final PhoneCodeAutoRetrievalTimeout autoTimeout = (String verId) {
+      this.verificationId = verId;
+    };
+
+    await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phoneNo,
+        timeout: Duration(seconds: 120),
+        verificationCompleted: verified,
+        verificationFailed: verificationfailed,
+        codeSent: smsSent,
+        codeAutoRetrievalTimeout: autoTimeout);
+  }
   Widget LoginPage() {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
@@ -267,7 +392,7 @@ class _LoginScreenState extends State<LoginScreen>
                                       onTap: () async{
                                         try {
                                           if (formKey.currentState.validate()) {
-                                            signIn(email, password, context);
+                                            signInE(email, password, context);
                                             setState(() {
                                               if (_state == 0) {
                                                 animateButton();
@@ -574,26 +699,49 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   PageController _controller = new PageController(initialPage: 1, viewportFraction: 1.0);
-
+  Future<bool> _onBackPressed() {
+    return showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: new Text('Are you sure?'),
+        content: new Text('Do you want to exit an App'),
+        actions: <Widget>[
+          new FlatButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text("NO"),
+          ),
+          SizedBox(height: 16),
+          new FlatButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text("YES"),
+          ),
+        ],
+      ),
+    ) ??
+        false;
+  }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-          decoration: BoxDecoration(
-            color: Colors.redAccent,
-            image: DecorationImage(
-              colorFilter: new ColorFilter.mode(
-                  Colors.black.withOpacity(0.3), BlendMode.dstATop),
-              image: AssetImage('assets/images/appbg.jpg'),
-              fit: BoxFit.cover,
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+        body: Container(
+            decoration: BoxDecoration(
+              color: Colors.redAccent,
+              image: DecorationImage(
+                colorFilter: new ColorFilter.mode(
+                    Colors.black.withOpacity(0.3), BlendMode.dstATop),
+                image: AssetImage('assets/images/appbg.jpg'),
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          child: PageView(
-            controller: _controller,
-            physics: new AlwaysScrollableScrollPhysics(),
-            children: <Widget>[LoginPage(), HomePage(), SignupPage()],
-            scrollDirection: Axis.horizontal,
-          )),
+            child: PageView(
+              controller: _controller,
+              physics: new AlwaysScrollableScrollPhysics(),
+              children: <Widget>[LoginPage(), Home(), SignupPage()],
+              scrollDirection: Axis.horizontal,
+            )),
+      ),
     );
   }
   Widget setUpButtonChild(String text) {

@@ -1,16 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:medicated/Screens/Home/MainPage.dart';
 import 'package:medicated/Screens/Login/CompleteRegister.dart';
 
-signIn(String email, String password,context) {
+signInE(String email, String password,context) {
   try {
     FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password)
         .then((currentUser) => Firestore.instance.collection("user").document(currentUser.user.uid).get())
-        .then((DocumentSnapshot result) => Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) => HomePage(title:result['name'],uid:result['phoneNo'],image:result['profilePics']))));
+        .then((DocumentSnapshot result) =>
+          (result["CompleteRegister"]==true)?
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(title:result['name'],uid:result['phoneNo'],image:result['profilePics']))):
+          Navigator.push(context, MaterialPageRoute(builder: (context) => CompleteRegistration(isNumber:false,data:email,)))
+    );
   } catch (e){
    return AlertDialog(
         title: Text('error'),
@@ -28,8 +30,15 @@ signIn(String email, String password,context) {
 
 signUp(email, password,context) {
   FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password,)
-      .then((currentUser) =>{Navigator.push(context, MaterialPageRoute(
-        builder: (context) => CompleteRegistration()))}
-      );
+      .then((currentUser) =>
+      FirebaseAuth.instance.currentUser().then((value) =>
+          Firestore.instance.collection('user').document(value.uid).setData({
+            "CompleteRegister":false,
+          }).then((value) =>
+      {Navigator.push(context, MaterialPageRoute(
+        builder: (context) => CompleteRegistration(isNumber:false,data:email,)))}
+      )
+  )
+  );
 }
 

@@ -155,6 +155,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.1+2"
+  firebase_login_register:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: ac8d96406c8e993cd4e8a7e81c33fac4a90cb2a1
+      url: "git://github.com/shantanu850/firebase_login_register_auth.git"
+    source: git
+    version: "0.0.1"
   firebase_messaging:
     dependency: "direct main"
     description:

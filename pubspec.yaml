@@ -47,6 +47,9 @@ dependencies:
   add_2_calendar: ^1.4.0
   firebase_messaging: ^5.1.4
   datetime_picker_formfield: ^1.0.0
+  firebase_login_register:
+      git :
+        url: git://github.com/shantanu850/firebase_login_register_auth.git
 
 
 
@@ -70,6 +73,7 @@ flutter:
      - assets/images/
      - assets/
      - assets/images/bg.png
+     - assets/images/email.png
      - assets/images/appbg.jpg
      - assets/images/google.png
      - assets/images/facebook.png

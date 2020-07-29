@@ -9,7 +9,6 @@ import 'package:medicated/Screens/Home/MainPage.dart';
 import 'package:medicated/Screens/Login/CompleteRegister.dart';
 import 'package:medicated/Screens/Login/index.dart';
 import 'package:medicated/components/Customloder.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'NotificationHelper.dart';
 import 'Screens/Home/Utility.dart';
 
@@ -67,7 +66,7 @@ class _SplashPageState extends State<Auth> with TickerProviderStateMixin {
       else
         {
           Firestore.instance.collection('user').document(currentUser.uid).get().then((value) =>
-            (value['CompleteRegister']==true)?
+            (value['CompleteRegister']==true||value['CompleteRegister']!=null)?
               Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => HomePage(title:value['name'],uid:value['phoneNo'],image:value['profilePics'],)),
               ):Navigator.pushReplacement(context,

@@ -1,11 +1,15 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medicated/Screens/Login/styles.dart';
 
 class GoogleSignIn extends StatelessWidget {
   final DecorationImage google;
   final DecorationImage facebook;
-  GoogleSignIn({this.google,this.facebook});
+  final onGoogle;
+  final onFacebook;
+  final onEmail;
+  GoogleSignIn({this.google,this.facebook, this.onGoogle, this.onFacebook, this.onEmail});
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -51,23 +55,41 @@ class GoogleSignIn extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children:<Widget>[
-              Container(
+              GestureDetector(
+                onTap: onGoogle,
+                child: Container(
+                  margin: EdgeInsets.all(5),
+                width:width*0.15,
+                height:width*0.15,
+                alignment: Alignment.center,
+                decoration: new BoxDecoration(
+                  image: google,
+                ),
+            ),
+              ),
+                GestureDetector(
+                  onTap: onEmail,
+                  child: Container(
+                    margin: EdgeInsets.all(5),
+                    width:width*0.15,
+                    height:width*0.15,
+                    alignment: Alignment.center,
+                    decoration: new BoxDecoration(
+                      image: emailImage,
+                    ),
+                  ),
+                ),
+            GestureDetector(
+              onTap: onFacebook,
+              child: Container(
                 margin: EdgeInsets.all(5),
-              width:width*0.15,
-              height:width*0.15,
+                width:width*0.15,
+                height:width*0.15,
               alignment: Alignment.center,
               decoration: new BoxDecoration(
-                image: google,
+              image: facebook,
               ),
-            ),
-            Container(
-              margin: EdgeInsets.all(5),
-              width:width*0.15,
-              height:width*0.15,
-            alignment: Alignment.center,
-            decoration: new BoxDecoration(
-            image: facebook,
-            ),
+              ),
             ),
 
               ],

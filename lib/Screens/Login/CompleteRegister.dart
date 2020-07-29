@@ -13,13 +13,16 @@ import 'package:path/path.dart' as Path;
 
 
 class CompleteRegistration extends StatefulWidget {
+  final bool isNumber;
+  final String data;
+  const CompleteRegistration({Key key, this.isNumber, this.data}) : super(key: key);
   @override
   _CompleteRegistrationState createState() => _CompleteRegistrationState();
 }
 
 class _CompleteRegistrationState extends State<CompleteRegistration> {
 
-  String email,password,displayName,surName,phoneNo,confPassword;
+  String email,password,displayName,surName,data,confPassword;
   int _state = 0;
   final formKeyReg = GlobalKey<FormState>();
   String birthDateInString;
@@ -52,7 +55,7 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
       print('Image Path $_image');
     });
   }
-  Future continueRegister(displayName,surName,phoneNo,dob,gender,context)async{
+  Future continueRegister(displayName,surName,phoneNo,dob,gender,context,type,type2)async{
     final FirebaseUser user = await FirebaseAuth.instance.currentUser();
     final uid = user.uid;
     StorageReference storageReference = FirebaseStorage.instance
@@ -73,8 +76,8 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
           "uid": uid,
           "name": displayName,
           "surname": surName,
-          "email": user.email,
-          "phoneNo":phoneNo,
+          type2:widget.data,
+          type:data,
           "dob":dob,
           "gender":gender,
           "CompleteRegister":true,
@@ -221,7 +224,7 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
                                 ),
                               ),
                             ),
-                            Padding(
+                            (widget.isNumber==false)?Padding(
                               padding: const EdgeInsets.symmetric(vertical:2.0),
                               child: TextFormField(
                                 obscureText: false,
@@ -255,11 +258,57 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
                                   }
                                 },
                                 onChanged: (value) {
-                                  phoneNo = value; //get the value entered by user.
+                                  data = value; //get the value entered by user.
                                 },
                                 keyboardType: TextInputType.number,
                                 style: new TextStyle(
                                   color: Colors.white,
+                                  height: 1.0,
+                                  fontSize: 14,
+                                  fontFamily: "Poppins",
+                                ),
+                              ),
+                            ):Padding(
+                              padding: const EdgeInsets.symmetric(vertical:5.0),
+                              child: TextFormField(
+                                obscureText: false,
+                                decoration: new InputDecoration(
+                                  prefixIcon: new Icon(Icons.person,color:Colors.white),
+                                  labelText: 'Email',
+                                  labelStyle: TextStyle(color: Colors.white),
+                                  fillColor: Colors.white12,
+                                  filled: true,
+                                  border: new OutlineInputBorder(
+                                      borderRadius: new BorderRadius.circular(25.0),
+                                      borderSide: new BorderSide(
+                                        color: Colors.white,
+                                      )),
+                                  focusedBorder: new OutlineInputBorder(
+                                      borderRadius: new BorderRadius.circular(25.0),
+                                      borderSide: new BorderSide(
+                                        color: Colors.white,
+                                      )),
+                                  enabledBorder: new OutlineInputBorder(
+                                      borderRadius: new BorderRadius.circular(25.0),
+                                      borderSide: new BorderSide(
+                                        color: Colors.white,
+                                      )),
+                                ),
+                                validator: (val) {
+                                  Pattern pattern =
+                                      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                                  RegExp regex = new RegExp(pattern);
+                                  if (!regex.hasMatch(val)) {
+                                    return 'Email format is invalid';
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                onChanged: (value) {
+                                  data = value; //get the value entered by user.
+                                },
+                                keyboardType: TextInputType.emailAddress,
+                                style: new TextStyle(
                                   height: 1.0,
                                   fontSize: 14,
                                   fontFamily: "Poppins",
@@ -351,7 +400,7 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
                                       onTap: () async{
                                         try {
                                           if (formKeyReg.currentState.validate()) {
-                                            await continueRegister(displayName, surName, phoneNo, dob, _result, context);
+                                            await continueRegister(displayName, surName, data, dob, _result, context,widget.isNumber?"email":"phoneNo",widget.isNumber?"phoneNo":"email");
                                             setState(() {
                                               if (_state == 0)
                                                 animateButton();
