@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_register/mainScreen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,7 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:medicated/Screens/Home/MainPage.dart';
 import 'package:medicated/components/Customloder.dart';
 import 'package:path/path.dart' as Path;
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../main.dart';
 
 
 class CompleteRegistration extends StatefulWidget {
@@ -23,7 +23,6 @@ class CompleteRegistration extends StatefulWidget {
 class _CompleteRegistrationState extends State<CompleteRegistration> {
   String email,password,displayName,surName,phone,confPassword;
   int _state = 0;
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final formKeyReg = GlobalKey<FormState>();
   String birthDateInString;
   bool isNumber;
@@ -32,10 +31,46 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
   String _result = "";
   int _radioValue = 0;
   DateTime dob;
-  getuser()async{
-    final SharedPreferences prefs = await _prefs;
-    isNumber = prefs.get("isNumber");
-    dataa = prefs.get("data");
+  showError(text){
+    showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: new Text('Error'),
+        content: new Text(text),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text("Close"),
+          ),
+        ],
+      ),
+    );
+  }
+  getuser() async{
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    if(user != null){
+      if(user.email != null){
+        setState(() {
+          dataa = user.email;
+          isNumber = false;
+        });
+      }else if(user.phoneNumber != null){
+        setState(() {
+          dataa = user.phoneNumber;
+          isNumber = true;
+        });
+      }else{
+        setState(() {
+          dataa = null;
+          isNumber = null;
+        });
+      }
+    }else{
+      setState(() {
+        dataa = null;
+        isNumber = null;
+      });
+    }
   }
   @override
   void initState(){
@@ -69,10 +104,9 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
   }
   Future continueRegister(displayName,surName,dob,gender,context,phoneno,email)async{
     final FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    final uid = user.uid;
     StorageReference storageReference = FirebaseStorage.instance
         .ref()
-        .child('profilePics/${uid + Path.extension(_image.path)}');
+        .child('profilePics/${user.uid + Path.extension(_image.path)}');
     StorageUploadTask uploadTask = storageReference.putFile(_image);
     await uploadTask.onComplete.then((value) =>
         storageReference.getDownloadURL().then((fileURL) {
@@ -82,10 +116,10 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
         })).then((value) =>
         Firestore.instance
             .collection("user")
-            .document(uid)
-            .setData({
+            .document(user.uid)
+            .updateData({
           "profilePics":_uploadedFileURL,
-          "uid": uid,
+          "uid": user.uid,
           "name": displayName,
           "surname": surName,
           "email":email,
@@ -97,14 +131,46 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
         builder: (context) => Loading()))}
     );
   }
+  void handleClick(String value) {
+    switch (value) {
+      case 'Logout':
+        FirebaseAuth.instance.signOut();
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Authu()));
+        break;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        elevation:0,
+        backgroundColor: Colors.redAccent,
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: handleClick,
+            itemBuilder: (BuildContext context) {
+              return {'Logout'}.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          ),
+        ],
+        title:Text('Just One More step !',style:
+          TextStyle(
+            fontFamily: 'Museo',
+            fontSize:22,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle:true,
+      ),
       body: Container(
         height:MediaQuery.of(context).size.height,
-        padding: EdgeInsets.only(top:36),
-        color: Colors.blueGrey,
+        color: Colors.redAccent,
           child: Form(
                 key:formKeyReg,
                 child: Container(
@@ -112,18 +178,6 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
                   child: Container(
                         child: ListView(
                           children: <Widget>[
-                            Align(
-                              alignment: Alignment.topCenter,
-                              child: Container(
-                                margin:EdgeInsets.symmetric(vertical:10),
-                                child: Text('Just One More step !',style:
-                                TextStyle(
-                                  fontFamily: 'Museo',
-                                  fontSize:22,
-                                  color: Colors.white,
-                                ),),
-                              ),
-                            ),
                             Container(
                               margin: EdgeInsets.all(20),
                               alignment: Alignment.center,
@@ -131,7 +185,7 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
                                 onTap: (){getImage();},
                                 child: CircleAvatar(
                                   radius: width*0.2,
-                                  backgroundColor: Colors.grey,
+                                  backgroundColor: Colors.red,
                                   child: ClipOval(
                                     child: new SizedBox(
                                       width: width*0.3,
@@ -187,6 +241,7 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
                                 style: new TextStyle(
                                   height: 1.0,
                                   fontSize: 14,
+                                  color:Colors.white,
                                   fontFamily: "Poppins",
                                 ),
                               ),
@@ -232,6 +287,7 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
                                 style: new TextStyle(
                                   height: 1.0,
                                   fontSize: 14,
+                                  color:Colors.white,
                                   fontFamily: "Poppins",
                                 ),
                               ),
@@ -279,11 +335,11 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
                                 style: new TextStyle(
                                   height: 1.0,
                                   fontSize: 14,
+                                  color:Colors.white,
                                   fontFamily: "Poppins",
                                 ),
                               ),
-                            ):Container(),
-                            (isNumber==true||isNumber==null)?Padding(
+                            ):Padding(
                               padding: const EdgeInsets.symmetric(vertical:2.0),
                               child: TextFormField(
                                 obscureText: false,
@@ -327,13 +383,26 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
                                   fontFamily: "Poppins",
                                 ),
                               ),
-                            ):Padding(
-                              padding: const EdgeInsets.symmetric(vertical:5.0),
-                              child: TextFormField(
-                                obscureText: false,
-                                decoration: new InputDecoration(
-                                  prefixIcon: new Icon(Icons.person,color:Colors.white),
-                                  labelText: 'Email',
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical:5.0),
+                              child: DateTimeField(
+                                validator:(val) {
+                                  if(val==null) {
+                                    return "Select DOB";
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                                style: new TextStyle(
+                                  color: Colors.white,
+                                  height: 1.0,
+                                  fontSize: 14,
+                                  fontFamily: "Poppins",
+                                ),
+                                decoration:new InputDecoration(
+                                  prefixIcon: new Icon(Icons.cake,color:Colors.white),
+                                  labelText: 'Date Of Birth',
                                   labelStyle: TextStyle(color: Colors.white),
                                   fillColor: Colors.white12,
                                   filled: true,
@@ -353,74 +422,18 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
                                         color: Colors.white,
                                       )),
                                 ),
-                                validator: (val) {
-                                  Pattern pattern =
-                                      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-                                  RegExp regex = new RegExp(pattern);
-                                  if (!regex.hasMatch(val)) {
-                                    return 'Email format is invalid';
-                                  } else {
-                                    return null;
-                                  }
+                                format: format,
+                                onShowPicker: (context, currentValue) {
+                                  return showDatePicker(
+                                      context: context,
+                                      firstDate: DateTime(1900),
+                                      initialDate: currentValue ?? DateTime.now(),
+                                      lastDate: DateTime(2100));
                                 },
-                                onChanged: (value) {
-                                  email = value; //get the value entered by user.
+                                onChanged: (val){
+                                  dob = val;
                                 },
-                                keyboardType: TextInputType.emailAddress,
-                                style: new TextStyle(
-                                  height: 1.0,
-                                  fontSize: 14,
-                                  fontFamily: "Poppins",
-                                ),
                               ),
-                            ),
-                            DateTimeField(
-                              validator:(val) {
-                                if(val==null) {
-                                  return "Select DOB";
-                                }else{
-                                  return null;
-                                }
-                              },
-                              style: new TextStyle(
-                                color: Colors.white,
-                                height: 1.0,
-                                fontSize: 14,
-                                fontFamily: "Poppins",
-                              ),
-                              decoration:new InputDecoration(
-                                prefixIcon: new Icon(Icons.cake,color:Colors.white),
-                                labelText: 'Date Of Birth',
-                                labelStyle: TextStyle(color: Colors.white),
-                                fillColor: Colors.white12,
-                                filled: true,
-                                border: new OutlineInputBorder(
-                                    borderRadius: new BorderRadius.circular(25.0),
-                                    borderSide: new BorderSide(
-                                      color: Colors.white,
-                                    )),
-                                focusedBorder: new OutlineInputBorder(
-                                    borderRadius: new BorderRadius.circular(25.0),
-                                    borderSide: new BorderSide(
-                                      color: Colors.white,
-                                    )),
-                                enabledBorder: new OutlineInputBorder(
-                                    borderRadius: new BorderRadius.circular(25.0),
-                                    borderSide: new BorderSide(
-                                      color: Colors.white,
-                                    )),
-                              ),
-                              format: format,
-                              onShowPicker: (context, currentValue) {
-                                return showDatePicker(
-                                    context: context,
-                                    firstDate: DateTime(1900),
-                                    initialDate: currentValue ?? DateTime.now(),
-                                    lastDate: DateTime(2100));
-                              },
-                              onChanged: (val){
-                                dob = val;
-                              },
                             ),
                             Container(
                               child: Row(
@@ -431,84 +444,41 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
                                     groupValue: _radioValue,
                                     onChanged: _handleRadioValueChange,
                                   ),
-                                  new Text('Male'),
+                                  new Text('Male',
+                                    style:TextStyle(
+                                      color: Colors.white,
+                                      height: 1.0,
+                                      fontSize: 14,
+                                      fontFamily: "Poppins",
+                                    ),
+                                  ),
                                   new Radio(
                                     value: 1,
                                     groupValue: _radioValue,
                                     onChanged: _handleRadioValueChange,
                                   ),
-                                  new Text('Female'),
+                                  new Text('Female',
+                                    style:TextStyle(
+                                      color: Colors.white,
+                                      height: 1.0,
+                                      fontSize: 14,
+                                      fontFamily: "Poppins",
+                                    ),),
                                   new Radio(
                                     activeColor: Colors.white,
                                     value: 2,
                                     groupValue: _radioValue,
                                     onChanged: _handleRadioValueChange,
                                   ),
-                                  new Text('Others'),
+                                  new Text('Others',
+                                    style:TextStyle(
+                                      color: Colors.white,
+                                      height: 1.0,
+                                      fontSize: 14,
+                                      fontFamily: "Poppins",
+                                    ),),
                                 ],
                               ),
-                            ),
-                            Container(
-                                padding: EdgeInsets.only(top:10),
-                                child: SizedBox(
-                                  height: width*0.15,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: width*0.01),
-                                    child :InkWell(
-                                      borderRadius: BorderRadius.circular(30),
-                                      onTap: () async{
-                                        try {
-                                          if (formKeyReg.currentState.validate()) {
-                                            if(isNumber == true) {
-                                              await continueRegister(
-                                                  displayName,
-                                                  surName,
-                                                  dob,
-                                                  _result,
-                                                  context,
-                                                  dataa,
-                                                  email);
-                                            }else if(isNumber == false){
-                                              await continueRegister(
-                                                  displayName,
-                                                  surName,
-                                                  dob,
-                                                  _result,
-                                                  context,
-                                                  phone,
-                                                  dataa);
-                                            }else{
-                                              await continueRegister(
-                                                  displayName,
-                                                  surName,
-                                                  dob,
-                                                  _result,
-                                                  context,
-                                                  phone,
-                                                  email);
-                                            }
-                                            setState(() {
-                                              if (_state == 0)
-                                                animateButton();
-                                            });
-                                          }
-                                        }catch(e){
-                                        }
-                                      },
-                                      splashColor: Colors.blue,
-                                      highlightColor: Colors.blue,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(30),
-                                        ),
-                                        child: Center(
-                                          child: setUpButtonChild("SignUp"),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
                             ),
                           ],
                         ),
@@ -516,37 +486,89 @@ class _CompleteRegistrationState extends State<CompleteRegistration> {
                 ),
           ),
         ),
+      bottomNavigationBar:Container(
+          width: width,
+          color: Colors.redAccent,
+          child: SizedBox(
+            height: width*0.15,
+            child: Container(
+              color: Colors.redAccent,
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(horizontal:width*0.2),
+              child :InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: () async{
+                  setState(() {
+                    _state = 1;
+                  });
+                  try {
+                    if(_image!=null){
+                      if (formKeyReg.currentState.validate()) {
+                        if(isNumber == true) {
+                          await continueRegister(
+                              displayName,
+                              surName,
+                              dob,
+                              _result,
+                              context,
+                              dataa,
+                              email);
+                        }else if(isNumber == false){
+                          await continueRegister(
+                              displayName,
+                              surName,
+                              dob,
+                              _result,
+                              context,
+                              phone,
+                              dataa);
+                        }else{
+                          await continueRegister(
+                              displayName,
+                              surName,
+                              dob,
+                              _result,
+                              context,
+                              phone,
+                              email);
+                        }
+                      }
+                    }else{
+                      showError("Please Add Image");
+                    }
+                  }catch(e){
+                    setState(() {
+                      _state = 0;
+                    });
+                  }
+                },
+                splashColor: Colors.blue,
+                highlightColor: Colors.blue,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Center(
+                    child:(_state==0)?Text("SignUp",
+                      style: TextStyle(
+                        fontFamily: 'Museo',
+                        fontSize:22,
+                        color: Colors.red,
+                      ),
+                    ):
+                    ColorLoader(
+                      dotOneColor: Colors.purple,
+                      dotTwoColor: Colors.pink,
+                      dotThreeColor: Colors.red,
+                      duration: Duration(seconds:2),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
+      ),
     );
-  }
-  Widget setUpButtonChild(String text) {
-    if (_state == 0) {
-      return new Text(
-        text,
-        style: const TextStyle(
-          color: Colors.purple,
-          fontSize: 16.0,
-          fontWeight: FontWeight.bold,
-        ),
-      );
-    } else{
-      return ColorLoader(
-        dotOneColor: Colors.purple,
-        dotTwoColor: Colors.pink,
-        dotThreeColor: Colors.red,
-        duration: Duration(seconds:2),
-      );
-    }
-  }
-
-  void animateButton() {
-    setState(() {
-      _state = 1;
-    });
-
-    Timer(Duration(milliseconds: 2000), () {
-      setState(() {
-        _state = 2;
-      });
-    });
   }
 }
