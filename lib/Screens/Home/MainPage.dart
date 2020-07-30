@@ -7,6 +7,7 @@ import 'package:getflutter/components/avatar/gf_avatar.dart';
 import 'package:medicated/Screens/profile/MyAppointment.dart';
 import 'package:medicated/Screens/profile/PeofileScreen.dart';
 import 'package:medicated/components/CustomKFDrawer.dart';
+import 'package:medicated/components/Customloder.dart';
 import 'package:medicated/drawerFragments/FragmentAbout.dart';
 import 'package:medicated/drawerFragments/FragmentContactUs.dart';
 import 'package:medicated/drawerFragments/FragmentFeedback.dart';
@@ -41,7 +42,35 @@ class _LoadingState extends State<Loading> {
         if (snapshot.connectionState == ConnectionState.done) {
           return  HomePage(title: snapshot.data['name'], uid: snapshot.data['uid'], imageo: snapshot.data['profilePics'],);
         }else{
-          return Container();
+          return Scaffold(
+              body:Container(
+                alignment: Alignment.center,
+                color: Colors.redAccent,
+                child:Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("Medicated",
+                        textAlign: TextAlign.center,
+                        style:TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          fontFamily: 'Museo',
+                          color: Colors.white,
+                        ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(20),
+                      child: ColorLoader(
+                        dotOneColor: Colors.white,
+                        dotTwoColor: Colors.white,
+                        dotThreeColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+          );
         }
       }
     );

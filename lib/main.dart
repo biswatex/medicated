@@ -153,7 +153,33 @@ class _SplashPageState extends State<Authu> with TickerProviderStateMixin {
       body: Auth(
         appIcon: Icon(Icons.local_hospital,color: Colors.white),
         appName: Text("Medicated",style: TextStyle(fontWeight:FontWeight.bold,color: Colors.white,fontSize: 16,fontFamily:"Museo"),),
-        loadingWidget: ColorLoader(),
+        loadingWidget:Container(
+          alignment: Alignment.center,
+          color: Colors.redAccent,
+          child:Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text("Medicated",
+                textAlign: TextAlign.center,
+                style:TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                  fontFamily: 'Museo',
+                  color: Colors.white,
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(20),
+                child: ColorLoader(
+                  dotOneColor: Colors.white,
+                  dotTwoColor: Colors.white,
+                  dotThreeColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
         completeRegisterPage: CompleteRegistration(),
         emailImage: DecorationImage(image: AssetImage('assets/images/email.png')),
         googleImage: DecorationImage(image: AssetImage('assets/images/google.png')),
