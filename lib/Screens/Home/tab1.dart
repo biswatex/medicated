@@ -9,7 +9,7 @@ import 'package:medicated/Screens/Home/QueryList.dart';
 import 'package:medicated/components/CategoryCard.dart';
 import 'package:medicated/components/DoctorType.dart';
 import 'package:medicated/components/PathologyCard.dart';
-import 'package:medicated/components/card.dart';
+import 'package:medicated/components/DoctorsCard.dart';
 import 'package:medicated/components/mainAppBar.dart';
 
 class TabHome extends StatefulWidget {

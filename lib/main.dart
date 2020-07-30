@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_login_register/firebase_login_register.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:medicated/Screens/Home/MainPage.dart';
-import 'package:medicated/Screens/Login/CompleteRegister.dart';
-import 'package:medicated/Screens/Login/index.dart';
+import 'file:///B:/mediacated/lib/Screens/profile/CompleteRegister.dart';
 import 'package:medicated/components/Customloder.dart';
 import 'NotificationHelper.dart';
 import 'Screens/Home/Utility.dart';
@@ -41,40 +41,22 @@ Future<void> main() async{
       MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Medicative Demo',
-        home:  Auth(),
+        home:  Authu(),
   ));
 }
-class Auth extends StatefulWidget {
-  Auth({Key key}) : super(key: key);
+class Authu extends StatefulWidget {
+  Authu({Key key}) : super(key: key);
   @override
   _SplashPageState createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<Auth> with TickerProviderStateMixin {
+class _SplashPageState extends State<Authu> with TickerProviderStateMixin {
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 
   @override
   void initState(){
-    FirebaseAuth.instance
-        .currentUser()
-        .then((currentUser) => {
-      if (currentUser == null)
-        {Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) => LoginScreen()),)}
-      else
-        {
-          Firestore.instance.collection('user').document(currentUser.uid).get().then((value) =>
-            (value['CompleteRegister']==true||value['CompleteRegister']!=null)?
-              Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => HomePage(title:value['name'],uid:value['phoneNo'],image:value['profilePics'],)),
-              ):Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => CompleteRegistration()),
-            )
-          ),
-        }
-    });
     super.initState();
     var initializationSettingsAndroid = new AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -168,26 +150,18 @@ class _SplashPageState extends State<Auth> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-          height: MediaQuery.of(context).size.height,
-          child: Center(
-              child: Container(
-                alignment: Alignment.center,
-                child: ListView(
-                  children: [
-                    Align(
-                        alignment: Alignment.center,
-                        child: Text("medicative")),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom:100),
-                      child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: GoogleLoder()),
-                    ),
-                  ],
-                ),
-              )),
-        ),
+      body: Auth(
+        appIcon: Icon(Icons.local_hospital,color: Colors.white),
+        appName: Text("Medicated",style: TextStyle(fontWeight:FontWeight.bold,color: Colors.white,fontSize: 16,fontFamily:"Museo"),),
+        loadingWidget: ColorLoader(),
+        completeRegisterPage: CompleteRegistration(),
+        emailImage: DecorationImage(image: AssetImage('assets/images/email.png')),
+        googleImage: DecorationImage(image: AssetImage('assets/images/google.png')),
+        facebookImage: DecorationImage(image: AssetImage('assets/images/facebook.png')),
+        backgroundImageAsset: AssetImage("assets/images/appbg.jpg"),
+        userDataBaseName: "user",
+        homePage: Loading(),
+      ),
     );
   }
 }

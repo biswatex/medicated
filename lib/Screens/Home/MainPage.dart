@@ -1,9 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getflutter/components/avatar/gf_avatar.dart';
-import 'package:medicated/Screens/Login/index.dart';
 import 'package:medicated/Screens/profile/MyAppointment.dart';
 import 'package:medicated/Screens/profile/PeofileScreen.dart';
 import 'package:medicated/components/CustomKFDrawer.dart';
@@ -12,15 +12,47 @@ import 'package:medicated/drawerFragments/FragmentContactUs.dart';
 import 'package:medicated/drawerFragments/FragmentFeedback.dart';
 import 'package:medicated/drawerFragments/FragmentSettings.dart';
 import 'package:medicated/drawerFragments/fragmentHome.dart';
+import 'package:medicated/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'Utility.dart';
 
+class Loading extends StatefulWidget {
+  @override
+  _LoadingState createState() => _LoadingState();
+}
+
+class _LoadingState extends State<Loading> {
+  Future f;
+  Future getData()async{
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    DocumentSnapshot snapshot = await Firestore.instance.collection('user').document(user.uid).get();
+    return snapshot;
+  }
+  @override
+  void initState() {
+    f = getData();
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: f,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return  HomePage(title: snapshot.data['name'], uid: snapshot.data['uid'], imageo: snapshot.data['profilePics'],);
+        }else{
+          return Container();
+        }
+      }
+    );
+  }
+}
+
 class HomePage extends StatefulWidget {
-  final String title;
-  final String uid;
-  final String image;
-  HomePage({Key key, this.title,this.uid,this.image}) : super(key: key);
+  final title;
+  final uid;
+  final imageo;
+  HomePage({Key key, this.title, this.uid, this.imageo}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -31,27 +63,21 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   int counter = 10;
   KFDrawerController _drawerController;
-  getData()async{
-    SharedPreferences prefs = SharedPreferences.getInstance() as SharedPreferences;
-    return prefs;
-  }
   @override
-  // ignore: missing_return
-  Future<void> initState() {
+  initState(){
     getSF();
     super.initState();
     String name ;
     String uide;
     String image;
-    if(widget.title!=null && widget.uid != null && widget.image !=null) {
+    if(widget.title!=null && widget.uid != null && widget.imageo!=null) {
       name = widget.title;
       uide = widget.uid;
-      image = widget.image;
+      image = widget.imageo;
     }
-    else if(widget.image == null && widget.title !=null && widget.uid != null){
+    else if(widget.imageo==null && widget.title!=null && widget.uid!= null){
       name = widget.title;
       uide = widget.uid;
-      image = widget.image;
       image = "https://cdn3.iconfinder.com/data/icons/avatars-round-flat/33/avat-01-512.png";
     }else{
       uide ="+91 1800000100";
@@ -134,7 +160,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   getSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('name',widget.title);
-    prefs.setString('email', widget.uid);
+    prefs.setString('email',widget.uid);
   }
   @override
   Widget build(BuildContext context) {
@@ -152,7 +178,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
           onPressed: () {
             FirebaseAuth.instance.signOut().then((value) =>
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen())));
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Authu())));
           },
         ),
         decoration: BoxDecoration(

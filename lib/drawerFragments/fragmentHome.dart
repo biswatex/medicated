@@ -1,12 +1,7 @@
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:medicated/HomeTabs/tab1.dart';
-import 'package:medicated/HomeTabs/tab4.dart';
-import 'package:medicated/NotificationHelper.dart';
+import 'package:medicated/Screens/Home/tab1.dart';
 import 'package:medicated/Screens/Home/Notifications.dart';
 import 'package:medicated/components/CustomKFDrawer.dart';
 
@@ -18,23 +13,7 @@ class FragmentHome extends KFDrawerContent {
 
 class _MainClassState extends State<FragmentHome>
     with SingleTickerProviderStateMixin {
-  int _selectedIndex = 0;
   int counter = 10;
-  final List<Widget> _widgetOptions = <Widget>[
-    TabHome(),
-    Text(
-      'Index 2: School',
-    ),
-    Text(
-      'Index 3: School',
-    ),
-    User(),
-  ];
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
   Future<bool> _onBackPressed() {
     if(_scaffoldKey.currentState.isEndDrawerOpen){
       Navigator.of(context).pop();
@@ -134,24 +113,7 @@ class _MainClassState extends State<FragmentHome>
                 ),
               ]
             ),
-            body: TabHome(),/*Container(
-              child: _widgetOptions.elementAt(_selectedIndex),
-            ),*/
-            /*bottomNavigationBar: BubbleBottomBar(
-              opacity: .2,
-              currentIndex: _selectedIndex,
-              onTap: _onItemTapped,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              elevation: 8,
-              hasInk: true ,//new, gives a cute ink effect
-              inkColor: Colors.black12, //optional, uses theme color if not specified
-              items: <BubbleBottomBarItem>[
-                BubbleBottomBarItem(backgroundColor: Colors.red, icon: Icon(Icons.home, color: Colors.black,), activeIcon: Icon(Icons.home, color: Colors.red,), title: Text("Home")),
-                BubbleBottomBarItem(backgroundColor: Colors.deepPurple, icon: Icon(Icons.local_hospital, color: Colors.black,), activeIcon: Icon(Icons.local_hospital, color: Colors.deepPurple,), title: Text("Clinic")),
-                BubbleBottomBarItem(backgroundColor: Colors.indigo, icon: Icon(Icons.timeline, color: Colors.black,), activeIcon: Icon(Icons.timeline, color: Colors.indigo,), title: Text("Track")),
-                BubbleBottomBarItem(backgroundColor: Colors.green, icon: Icon(Icons.account_circle, color: Colors.black,), activeIcon: Icon(Icons.account_circle, color: Colors.green,), title: Text("Account"))
-              ],
-            ),*/
+            body: TabHome(),
           ),
         ),
     );
